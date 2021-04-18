@@ -41,6 +41,7 @@ if (ctx != null) {
 	//ctx.fillRect(0, 0, cn.width, cn.height);
 	Pipeline.render(scene, cn);
 }
+// else
 
 document.addEventListener('keypress', keyPressed);
 
@@ -223,6 +224,7 @@ function keyPressed(event: { key: string }) {
 		//ctx.fillRect(0, 0, cn.width, cn.height);
 		Pipeline.render(scene, cn);
 	}
+	// else
 }
 
 
