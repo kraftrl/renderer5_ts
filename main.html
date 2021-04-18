@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset=utf-8>
+		<title>JavaScript Renderer 1</title>
+		<style>
+			body { margin: 0; }
+		</style>
+	</head>
+
+	<body>
+		<canvas id="pixels" width="900" height="900"></canvas>
+
+		<script src="scene/Scene.js"></script>
+		<script src="scene/Camera.js"></script>
+		<script src="scene/Model.js"></script>
+		<script src="scene/ModelShading.js"></script>
+		<script src="scene/LineSegment.js"></script>
+		<script src="scene/Vertex.js"></script>
+		<script src="scene/Vector.js"></script>
+		<script src="scene/Matrix.js"></script>
+		<script src="scene/Position.js"></script>
+		<script src="scene/OrthographicNormalizeMatrix.js"></script>
+		<script src="scene/PerspectiveNormalizeMatrix.js"></script>
+
+		<script src="pipeline/Pipeline.js"></script>
+		<script src="pipeline/Projection.js"></script>
+		<script src="pipeline/Rasterize.js"></script>
+		<script src="pipeline/View2Camera.js"></script>
+		<script src="pipeline/Model2View.js"></script>
+
+		<script src="models/Axes2D.js"></script>
+		<script src="models/Cube.js"></script>
+		<script src="models/Cube2.js"></script>
+		<script src="models/Circle.js"></script>
+		<script src="models/CylinderSector.js"></script>
+
+		<script src="main.js"></script>
+	</body>
+</html>
