@@ -168,7 +168,7 @@ function keyPressed(event: { key: string }) {
 		scene.camera.projPerspectiveReset();
 	}
 	else if ('b' == c) {
-		// rotate around x axis
+		// rotate counter-clockwise around the x-axis
 		let vec1 = scene.positionList[currentPosition].matrix.v1;
 		let vec2 = scene.positionList[currentPosition].matrix.v2;
 		let vec3 = scene.positionList[currentPosition].matrix.v3;
@@ -181,8 +181,22 @@ function keyPressed(event: { key: string }) {
 			rot.timesVector(vec4));
 		scene.positionList[currentPosition].matrix = newMatrix;
 	}
+	else if ('B' == c) {
+		// rotate clockwise around the x-axis
+		let vec1 = scene.positionList[currentPosition].matrix.v1;
+		let vec2 = scene.positionList[currentPosition].matrix.v2;
+		let vec3 = scene.positionList[currentPosition].matrix.v3;
+		let vec4 = scene.positionList[currentPosition].matrix.v4;
+		let rot: Matrix = Matrix.rotateX(-15.0);
+
+		let newMatrix: Matrix = Matrix.build(rot.timesVector(vec1),
+			rot.timesVector(vec2),
+			rot.timesVector(vec3),
+			rot.timesVector(vec4));
+		scene.positionList[currentPosition].matrix = newMatrix;
+	}
 	else if ('n' == c) {
-		// rotate around x axis
+		// rotate counter-clockwise around the y-axis
 		let vec1 = scene.positionList[currentPosition].matrix.v1;
 		let vec2 = scene.positionList[currentPosition].matrix.v2;
 		let vec3 = scene.positionList[currentPosition].matrix.v3;
@@ -195,13 +209,41 @@ function keyPressed(event: { key: string }) {
 			rot.timesVector(vec4));
 		scene.positionList[currentPosition].matrix = newMatrix;
 	}
+	else if ('N' == c) {
+		// rotate clockwise around the y-axis
+		let vec1 = scene.positionList[currentPosition].matrix.v1;
+		let vec2 = scene.positionList[currentPosition].matrix.v2;
+		let vec3 = scene.positionList[currentPosition].matrix.v3;
+		let vec4 = scene.positionList[currentPosition].matrix.v4;
+		let rot: Matrix = Matrix.rotateY(-15.0);
+
+		let newMatrix: Matrix = Matrix.build(rot.timesVector(vec1),
+			rot.timesVector(vec2),
+			rot.timesVector(vec3),
+			rot.timesVector(vec4));
+		scene.positionList[currentPosition].matrix = newMatrix;
+	}
 	else if ('m' == c) {
-		// rotate around x axis
+		// rotate counter-clockwise around the z-axis
 		let vec1 = scene.positionList[currentPosition].matrix.v1;
 		let vec2 = scene.positionList[currentPosition].matrix.v2;
 		let vec3 = scene.positionList[currentPosition].matrix.v3;
 		let vec4 = scene.positionList[currentPosition].matrix.v4;
 		let rot: Matrix = Matrix.rotateZ(15.0);
+
+		let newMatrix: Matrix = Matrix.build(rot.timesVector(vec1),
+			rot.timesVector(vec2),
+			rot.timesVector(vec3),
+			rot.timesVector(vec4));
+		scene.positionList[currentPosition].matrix = newMatrix;
+	}
+	else if ('M' == c) {
+		// rotate clockwise around the z-axis
+		let vec1 = scene.positionList[currentPosition].matrix.v1;
+		let vec2 = scene.positionList[currentPosition].matrix.v2;
+		let vec3 = scene.positionList[currentPosition].matrix.v3;
+		let vec4 = scene.positionList[currentPosition].matrix.v4;
+		let rot: Matrix = Matrix.rotateZ(-15.0);
 
 		let newMatrix: Matrix = Matrix.build(rot.timesVector(vec1),
 			rot.timesVector(vec2),
@@ -247,6 +289,7 @@ function print_help_message()
 	//console.log("Use the 'r' key to reset the camera.");
 
 	console.log("Use the x/X, y/Y, z/Z, keys to translate the model along the x, y, z axes.");
+	console.log("Use the b/B, n/N, m/M keys to rotate the model around the x, y, z axes.");
 	console.log("Use the s/S keys to scale the size of the model.");
 	console.log("Use the 'c' key to change the random solid model color.");
 	console.log("Use the 'C' key to randomly change model's colors.");
