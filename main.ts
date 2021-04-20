@@ -41,7 +41,9 @@ if (ctx != null) {
 	//ctx.fillRect(0, 0, cn.width, cn.height);
 	Pipeline.render(scene, cn);
 }
-// else
+else {
+	console.log("cn.getContext('2d') is null");
+}
 
 document.addEventListener('keypress', keyPressed);
 
@@ -224,7 +226,9 @@ function keyPressed(event: { key: string }) {
 		//ctx.fillRect(0, 0, cn.width, cn.height);
 		Pipeline.render(scene, cn);
 	}
-	// else
+	else {
+		console.log("cn.getContext(2d) is null");
+	}
 }
 
 
