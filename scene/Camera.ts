@@ -8,6 +8,8 @@
 class Camera {
 	perspective: boolean;
 
+	normalizeMatrix: Matrix;
+
 	left: number;
 	right: number;
 	bottom: number;
@@ -24,6 +26,8 @@ class Camera {
 		this.top = 1.0;
 		this.n = -1.0;
 
+		this.normalizeMatrix = PerspectiveNormalizeMatrix.build(this.left, this.right, this.bottom, this.top, this.n);
+
 		this.perspective = true;
 	}
 
@@ -34,6 +38,8 @@ class Camera {
 		this.top = top;
 		this.bottom = bottom;
 		this.n = -near;
+
+		this.normalizeMatrix = PerspectiveNormalizeMatrix.build(this.left, this.right, this.bottom, this.top, this.n);
 
 		this.perspective = true;
 	}
@@ -50,6 +56,8 @@ class Camera {
 		this.top = top;
 		this.bottom = bottom;
 		this.n = 0;
+
+		this.normalizeMatrix = OrthographicNormalizeMatrix.build(this.left, this.right, this.bottom, this.top);
 
 		this.perspective = false;
 	}
