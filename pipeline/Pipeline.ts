@@ -7,6 +7,7 @@
 */
 class Pipeline {
 
+	static debug: boolean = false;
 	/**
 
 	*/
@@ -20,7 +21,7 @@ class Pipeline {
 				const model2 = Model2View.model2view(position.model, position.matrix);
 
 				// 1. Apply the Camera's normalizing view-to-camera coordinate transformation
-				const model3 = View2Camera.view2camera(model2, scene.camera);
+				const model3 = View2Camera.view2camera(model2, scene.camera.normalizeMatrix);
 
 				// 2. Apply the projection transformation.
 				const model4 = Projection.project(model3, scene.camera);

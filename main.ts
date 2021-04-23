@@ -42,7 +42,7 @@ if (ctx != null) {
 	Pipeline.render(scene, cn);
 }
 else {
-	console.log("cn.getContext('2d') is null");
+	console.log("cn.getContext(2d) is null");
 }
 
 document.addEventListener('keypress', keyPressed);
@@ -65,48 +65,28 @@ function keyPressed(event: { key: string }) {
 		console.log("Using " + p + " projection");
 	}
 	else if ('s' == c) {
-		for (const v of scene.positionList[currentPosition].model.vertexList) {
-			v.x /= 1.1;
-			v.y /= 1.1;
-			//v.z /= 1.1;
-		}
+		scene.positionList[currentPosition].matrix.mult(Matrix.scaleConst(1 / 1.1));
 	}
 	else if ('S' == c) {
-		for (const v of scene.positionList[currentPosition].model.vertexList) {
-			v.x *= 1.1;
-			v.y *= 1.1;
-			//v.z *= 1.1;
-		}
+		scene.positionList[currentPosition].matrix.mult(Matrix.scaleConst(1.1));
 	}
 	else if ('x' == c) {
-		for (const v of scene.positionList[currentPosition].model.vertexList) {
-			v.x -= 0.1;
-		}
+		scene.positionList[currentPosition].matrix.mult(Matrix.translate(-0.1, 0, 0));
 	}
 	else if ('y' == c) {
-		for (const v of scene.positionList[currentPosition].model.vertexList) {
-			v.y -= 0.1;
-		}
+		scene.positionList[currentPosition].matrix.mult(Matrix.translate(0, -0.1, 0));
 	}
 	else if ('z' == c) {
-		for (const v of scene.positionList[currentPosition].model.vertexList) {
-			v.z -= 0.1;
-		}
+		scene.positionList[currentPosition].matrix.mult(Matrix.translate(0, 0, -0.1))
 	}
 	else if ('X' == c) {
-		for (const v of scene.positionList[currentPosition].model.vertexList) {
-			v.x += 0.1;
-		}
+		scene.positionList[currentPosition].matrix.mult(Matrix.translate(0.1, 0, 0));
 	}
 	else if ('Y' == c) {
-		for (const v of scene.positionList[currentPosition].model.vertexList) {
-			v.y += 0.1;
-		}
+		scene.positionList[currentPosition].matrix.mult(Matrix.translate(0, 0.1, 0));
 	}
 	else if ('Z' == c) {
-		for (const v of scene.positionList[currentPosition].model.vertexList) {
-			v.z += 0.1;
-		}
+		scene.positionList[currentPosition].matrix.mult(Matrix.translate(0, 0, 0.1));
 	}
 	else if ('c' == c) {
 		ModelShading.setRandomColor( scene.positionList[currentPosition].model );
@@ -129,127 +109,76 @@ function keyPressed(event: { key: string }) {
 		// Shift camera right
 		scene.camera.left += 0.1;
 		scene.camera.right += 0.1;
+		updateNormalizeMatrix(scene.camera);
 	}
 	else if ('2' == c) {
 		// Shift camera left
 		scene.camera.left -= 0.1;
 		scene.camera.right -= 0.1;
+		updateNormalizeMatrix(scene.camera);
 	}
 	else if ('3' == c) {
 		// Shift camera up
 		scene.camera.top += 0.1;
 		scene.camera.bottom += 0.1;
+		updateNormalizeMatrix(scene.camera);
 	}
 	else if ('4' == c) {
 		// Shift camera down
 		scene.camera.top -= 0.1;
 		scene.camera.bottom -= 0.1;
+		updateNormalizeMatrix(scene.camera);
 	}
 	else if ('5' == c) {
 		// Shift camera forward
 		scene.camera.n += 0.1;
+		updateNormalizeMatrix(scene.camera);
 	}
 	else if ('6' == c) {
 		// Shift camera backward
 		scene.camera.n -= 0.1;
+		updateNormalizeMatrix(scene.camera);
 	}
 	else if ('7' == c) {
 		// Expand camera view horizontally
 		scene.camera.left -= 0.1;
 		scene.camera.right += 0.1;
+		updateNormalizeMatrix(scene.camera);
 	}
 	else if ('8' == c) {
 		// Contract camera view horizontally
 		scene.camera.left += 0.1;
 		scene.camera.right -= 0.1;
+		updateNormalizeMatrix(scene.camera);
 	}
 	else if ('9' == c) {
 		// Reset camera
 		scene.camera.projPerspectiveReset();
+		//updateNormalizeMatrix(scene.camera);
 	}
 	else if ('b' == c) {
-		// rotate counter-clockwise around the x-axis
-		let vec1 = scene.positionList[currentPosition].matrix.v1;
-		let vec2 = scene.positionList[currentPosition].matrix.v2;
-		let vec3 = scene.positionList[currentPosition].matrix.v3;
-		let vec4 = scene.positionList[currentPosition].matrix.v4;
-		let rot: Matrix = Matrix.rotateX(15.0);
-
-		let newMatrix: Matrix = Matrix.build(rot.timesVector(vec1),
-			rot.timesVector(vec2),
-			rot.timesVector(vec3),
-			rot.timesVector(vec4));
-		scene.positionList[currentPosition].matrix = newMatrix;
+		// rotate around x axis
+		scene.positionList[currentPosition].matrix.mult(Matrix.rotateX(15.0));
 	}
 	else if ('B' == c) {
-		// rotate clockwise around the x-axis
-		let vec1 = scene.positionList[currentPosition].matrix.v1;
-		let vec2 = scene.positionList[currentPosition].matrix.v2;
-		let vec3 = scene.positionList[currentPosition].matrix.v3;
-		let vec4 = scene.positionList[currentPosition].matrix.v4;
-		let rot: Matrix = Matrix.rotateX(-15.0);
-
-		let newMatrix: Matrix = Matrix.build(rot.timesVector(vec1),
-			rot.timesVector(vec2),
-			rot.timesVector(vec3),
-			rot.timesVector(vec4));
-		scene.positionList[currentPosition].matrix = newMatrix;
+		// rotate around x axis
+		scene.positionList[currentPosition].matrix.mult(Matrix.rotateX(-15.0));
 	}
 	else if ('n' == c) {
-		// rotate counter-clockwise around the y-axis
-		let vec1 = scene.positionList[currentPosition].matrix.v1;
-		let vec2 = scene.positionList[currentPosition].matrix.v2;
-		let vec3 = scene.positionList[currentPosition].matrix.v3;
-		let vec4 = scene.positionList[currentPosition].matrix.v4;
-		let rot: Matrix = Matrix.rotateY(15.0);
-
-		let newMatrix: Matrix = Matrix.build(rot.timesVector(vec1),
-			rot.timesVector(vec2),
-			rot.timesVector(vec3),
-			rot.timesVector(vec4));
-		scene.positionList[currentPosition].matrix = newMatrix;
+		// rotate around y axis
+		scene.positionList[currentPosition].matrix.mult(Matrix.rotateY(15.0));
 	}
 	else if ('N' == c) {
-		// rotate clockwise around the y-axis
-		let vec1 = scene.positionList[currentPosition].matrix.v1;
-		let vec2 = scene.positionList[currentPosition].matrix.v2;
-		let vec3 = scene.positionList[currentPosition].matrix.v3;
-		let vec4 = scene.positionList[currentPosition].matrix.v4;
-		let rot: Matrix = Matrix.rotateY(-15.0);
-
-		let newMatrix: Matrix = Matrix.build(rot.timesVector(vec1),
-			rot.timesVector(vec2),
-			rot.timesVector(vec3),
-			rot.timesVector(vec4));
-		scene.positionList[currentPosition].matrix = newMatrix;
+		// rotate around y axis
+		scene.positionList[currentPosition].matrix.mult(Matrix.rotateY(-15.0));
 	}
 	else if ('m' == c) {
-		// rotate counter-clockwise around the z-axis
-		let vec1 = scene.positionList[currentPosition].matrix.v1;
-		let vec2 = scene.positionList[currentPosition].matrix.v2;
-		let vec3 = scene.positionList[currentPosition].matrix.v3;
-		let vec4 = scene.positionList[currentPosition].matrix.v4;
-		let rot: Matrix = Matrix.rotateZ(15.0);
-
-		let newMatrix: Matrix = Matrix.build(rot.timesVector(vec1),
-			rot.timesVector(vec2),
-			rot.timesVector(vec3),
-			rot.timesVector(vec4));
-		scene.positionList[currentPosition].matrix = newMatrix;
+		// rotate around z axis
+		scene.positionList[currentPosition].matrix.mult(Matrix.rotateZ(15.0));
 	}
 	else if ('M' == c) {
-		// rotate clockwise around the z-axis
-		let vec1 = scene.positionList[currentPosition].matrix.v1;
-		let vec2 = scene.positionList[currentPosition].matrix.v2;
-		let vec3 = scene.positionList[currentPosition].matrix.v3;
-		let vec4 = scene.positionList[currentPosition].matrix.v4;
-		let rot: Matrix = Matrix.rotateZ(-15.0);
-
-		let newMatrix: Matrix = Matrix.build(rot.timesVector(vec1),
-			rot.timesVector(vec2),
-			rot.timesVector(vec3),
-			rot.timesVector(vec4));
-		scene.positionList[currentPosition].matrix = newMatrix;
+		// rotate around z axis
+		scene.positionList[currentPosition].matrix.mult(Matrix.rotateZ(-15.0));
 	}
 	else if ('?' == c) {
 		scene.positionList[currentPosition].model.visible = false;
@@ -296,4 +225,22 @@ function print_help_message()
 	console.log("Use the 'e' key to change the random solid edge colors.");
 	console.log("Use the 'E' key to change the random edge colors.");
 	console.log("Use the 'h' key to redisplay this help message.");
+}
+
+function updateNormalizeMatrix(camera: Camera) {
+	if (camera.perspective) {
+		let newNormalizeMatrix = PerspectiveNormalizeMatrix.build(camera.left,
+			camera.right,
+			camera.bottom,
+			camera.top,
+			camera.n);
+		camera.normalizeMatrix = newNormalizeMatrix;
+	}
+	else {
+		let newNormalizeMatrix = OrthographicNormalizeMatrix.build(camera.left,
+			camera.right,
+			camera.bottom,
+			camera.top);
+		camera.normalizeMatrix = newNormalizeMatrix;
+	}
 }
