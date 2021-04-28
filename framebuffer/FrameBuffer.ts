@@ -106,7 +106,7 @@ class FrameBuffer {
         return blue_fb;
     }
 
-
+/*
     dump2File(filename: string) {
         this.dumpPixels2File(0, 0, this.width - 1, this.height - 1, filename);
     }
@@ -119,7 +119,7 @@ class FrameBuffer {
         let writeStream = fs.createWriteStream(filename + '.ppm');
 
         writeStream.write(("P3\n" + p_width + " " + p_height + "\n" + 255 + "\n"));
-        //const temp: Array<number> = new Array(p_width * 3);
+        const temp: Array<number> = new Array(p_width * 3);
         let tempRow: string = "";
 
         for (var n = 0; n < p_height; n++) {
@@ -130,7 +130,7 @@ class FrameBuffer {
                 temp[i + 1] = Math.floor(hexToRGB(c)[1]);
                 temp[i + 2] = Math.floor(hexToRGB(c)[2]);
             }
-            */
+            
 
             for (var i = 0; i < p_width * 3; i += 3) {
                 const c = this.pixel_buffer[((ul_y + n) * this.width + ul_x) + i / 3];
@@ -143,4 +143,5 @@ class FrameBuffer {
         }
         writeStream.end();
     }
+    */
 }
