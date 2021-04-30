@@ -4,7 +4,7 @@ class FrameBuffer {
     height: number;
     pixel_buffer: Array<string>;
     bgColorFB: string;
-    vp: Viewport = new Viewport(0, 0, 1, 1, '#FFFFFF', this);
+    vp: Viewport;
 
     constructor(w: number, h: number, c: string) {
         this.width = w;
@@ -12,6 +12,8 @@ class FrameBuffer {
         this.pixel_buffer = [];
         this.bgColorFB = c;
         this.clearFB(this.bgColorFB);
+
+        this.vp = new Viewport(0, 0, this.width, this.height, this.bgColorFB, this)
 
     }
 
