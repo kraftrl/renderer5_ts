@@ -9,6 +9,8 @@ class RasterizeAntialias {
 	*/
     static rasterize(model: Model, ls: LineSegment, vp: Viewport) {
 
+        //RasterizeAntialias.doGamma = gam;
+        //RasterizeAntialias.doAntialiasing = antialias;
         let debug: boolean = RasterizeAntialias.debug && (Pipeline.debug || model.debug);
 
         // Get viewport's background color
@@ -25,8 +27,10 @@ class RasterizeAntialias {
         const c1 = hexToRGB(model.colorList[ls.cIndex[1]]);
 
         let r0 = c0[0], g0 = c0[1], b0 = c0[2];
+        //console.log(r0 + " " + g0 + " " + g0);
         let r1 = c1[0], g1 = c1[1], b1 = c1[2];
-
+        //console.log(r1 + " " + g1 + " " + g1);
+        
         // Transform each vertex to the "pixel plane" coordinate system.
         let x0 = 0.5 + w / 2.001 * (v0.x + 1); // x_pp = 0.5 + w/2 * (x_p+1)
         let y0 = 0.5 + h / 2.001 * (v0.y + 1); // y_pp = 0.5 + h/2 * (y_p+1)
@@ -45,7 +49,7 @@ class RasterizeAntialias {
         y0 = Math.round(y0);
         x1 = Math.round(x1);
         y1 = Math.round(y1);
-
+        
         // Rasterize a degenerate line segment as a single pixel
         if ((x0 == x1) && (y0 == y1)) {
             if (debug) {
@@ -55,7 +59,6 @@ class RasterizeAntialias {
             const x0_vp = Math.floor(x0) - 1;
             const y0_vp = h - Math.floor(y0);
             vp.setPixelVP(x0_vp, y0_vp, rgbToHex(r0, g0, b0));
-
             return;
         }
 
@@ -93,6 +96,8 @@ class RasterizeAntialias {
             b1 = tempB;
         }
 
+
+        
         // Compute the slopes of the line segment
         const m = (y1 - y0) / (x1 - x0);
         const slopeR = (r1 - r0) / (x1 - x0);
@@ -100,7 +105,7 @@ class RasterizeAntialias {
         const slopeB = (b1 - b0) / (x1 - x0);
 
 
-        // Rasterize this line segment in the direction of increasing x
+        // Rasterize this line segment in the direction of increasing x.
         // As x moves across the logical horizontal (or vertical) pixels,
         // we will compute a value of y for each x
         let y = y0;
@@ -110,12 +115,14 @@ class RasterizeAntialias {
             let r = Math.abs(r0 + slopeR * (x - x0));
             let g = Math.abs(g0 + slopeG * (x - x0));
             let b = Math.abs(b0 + slopeB * (x - x0));
+            //console.log(r + " " + g + " " + b);
 
             if (RasterizeAntialias.doAntialiasing) {
                 // y must be between two vertical (or horizontal) logical pixel coordinates
                 // Let y_low and y_hi be the logical pixel coordinates that bracket around y
                 let y_low = Math.floor(y);
                 let y_hi = y_low + 1;
+                
                 // Test for the top edge
                 if (!transposedLine && y == h) {
                     y_hi = h;
@@ -129,6 +136,7 @@ class RasterizeAntialias {
                 // Weight will be used to determine how much emphasis to place on
                 // each of the two pixels that bracket y
                 const weight = y - y_low;
+                
 
                 // Interpolate colors for the low and high pixels
                 // The smaller the weight, the closer the color is to the low pixel
@@ -141,12 +149,12 @@ class RasterizeAntialias {
 
                 if (RasterizeAntialias.doGamma) {
                     const gamma = 1 / 2.2;
-                    r_low = Math.pow(r_low, gamma);
-                    r_hi = Math.pow(r_hi, gamma);
-                    g_low = Math.pow(g_low, gamma);
-                    g_hi = Math.pow(g_hi, gamma);
-                    b_low = Math.pow(b_low, gamma);
-                    b_hi = Math.pow(b_hi, gamma);
+                    r_low = Math.pow(r_low/255, gamma) * 255;
+                    r_hi = Math.pow(r_hi/255, gamma) * 255;
+                    g_low = Math.pow(g_low/255, gamma) * 255;
+                    g_hi = Math.pow(g_hi/255, gamma) * 255;
+                    b_low = Math.pow(b_low/255, gamma) * 255;
+                    b_hi = Math.pow(b_hi/255, gamma) * 255;
                 }
 
                 // Set this antialiased pixel in the Framebuffer
@@ -162,15 +170,29 @@ class RasterizeAntialias {
 
                     vp.setPixelVP(x_vp, y_vp_low, rgbToHex(r_low, g_low, b_low));
                     vp.setPixelVP(x_vp, y_vp_hi, rgbToHex(r_hi, g_hi, b_hi));
+                   
+                }
+                else {
+                    if (debug) {
+                        // Debug log pixel info
+                    }
+
+                    // Viewport coordinates
+                    const x_vp_low = y_low - 1;
+                    const x_vp_hi = y_hi - 1;
+                    const y_vp = h - x;
+
+                    vp.setPixelVP(x_vp_low, y_vp, rgbToHex(r_low, g_low, b_low));
+                    vp.setPixelVP(x_vp_hi, y_vp, rgbToHex(r_hi, g_hi, b_hi));
                 }
             }
             else {
                 // No antialiasing
                 if (RasterizeAntialias.doGamma) {
                     const gamma = 1 / 2.2;
-                    r = Math.pow(r, gamma);
-                    g = Math.pow(g, gamma);
-                    b = Math.pow(b, gamma);
+                    r = Math.pow(r/255, gamma) * 255;
+                    g = Math.pow(g/255, gamma) * 255;
+                    b = Math.pow(b/255, gamma) * 255;
                 }
 
                 // The value of y will almost always be between two vertical
@@ -199,6 +221,7 @@ class RasterizeAntialias {
                 }
             }
         }
+        
         // For the x1, y1 endpoint
         if (!transposedLine) {
             if (debug) {
