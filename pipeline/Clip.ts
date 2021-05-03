@@ -26,16 +26,16 @@ class Clip {
             model.debug);
 
         for (const ls of model2.lineSegmentList) {
-            //Pipeline.logLineSegment("2. Clipping", model2, ls);
+            PipelineFB.logLineSegment("2. Clipping", model2, ls);
 
             let ls_clipped: LineSegment | null = Clip.clipSegment(model2, ls);
 
             if (ls_clipped != null) {
                 newLineSegmentList.push(ls_clipped);
-                // Pipeline.logLineSegment("2. Clipping (accept)", model2, ls_clipped)
+                PipelineFB.logLineSegment("2. Clipping (accept)", model2, ls_clipped)
             }
             else {
-                // Pipeline.logLineSegment("2. Clipping (reject)", model2, ls)
+                PipelineFB.logLineSegment("2. Clipping (reject)", model2, ls)
             }
         }
         return new Model(model2.name,
@@ -65,7 +65,7 @@ class Clip {
             || Math.abs(y0) > 1
             || Math.abs(y1) > 1)) {
             if (debug) {
-                // Print error -Trivial accept
+                console.log("-Trivial accept.");
             }
             return ls;
         }
@@ -75,7 +75,7 @@ class Clip {
             || (y0 > 1 && y1 > 1)
             || (y0 < -1 && y1 < -1)) {
             if (debug) {
-                // Print error -Trivial delete
+                console.log("-Trivial delete");
             }
             return null;
         }
@@ -180,22 +180,6 @@ class Clip {
             vOutside = "v0";
             vOx = x0; vOy = y0;
             vIx = x1; vIy = y1;
-            t = (-1 - vOx) / (vIx - vOx);
-            x = (1 - t) * vOx + t * vIx;
-            y = 1;
-            const newVertex = new Vertex(x, y, 0);
-
-            // Modify the model to contain the new vertex
-            vIndex = model.vertexList.length;
-            model.vertexList.push(newVertex);
-        }
-        else if (y0 > 1) {
-            // Crosses the line y = 1
-            inside = 1;
-            equation = "y = +1";
-            vOutside = "v0";
-            vOx = x0; vOy = y0;
-            vIx = x1; vIy = y1;
             t = (1 - vOy) / (vIy - vOy);
             x = (1 - t) * vOx + t * vIx;
             y = 1;
@@ -267,7 +251,15 @@ class Clip {
         model.colorList.push(newColor);
 
         if (debug) {
-            // Debug info
+            console.log("-Clip off " + vOutside + " at " + equation + "\n");
+            console.log("- t = " + t.toPrecision(25) + "\n");
+            console.log("- <x_i, y_i> = < " + vIx.toPrecision(24) + " " + vIy.toPrecision(24) + " >\n");
+            console.log("- <x_o, y_o> = < " + vOx.toPrecision(24) + " " + vOy.toPrecision(24) + " >\n");
+            console.log("- <x_c, y_c> = < " + x.toPrecision(24) + " " + y.toPrecision(24) + " >\n");
+
+            console.log("- <r_i, g_i, b_i> = < " + cI[0].toPrecision(15) + " " + cI[1].toPrecision(15) + " " + cI[2].toPrecision(15) + " >\n");
+            console.log("- <r_o, g_o, b_o> = < " + cO[0].toPrecision(15) + " " + cO[1].toPrecision(15) + " " + cO[2].toPrecision(15) + " >\n");
+            console.log("- <r_c, g_c, b_c> = < " + r.toPrecision(15) + " " + g.toPrecision(15) + " " + b.toPrecision(15) + " >\n");
         }
 
         // Return new line segment using the new vertex and color

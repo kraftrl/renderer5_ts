@@ -11,10 +11,10 @@ class Pipeline {
 	/**
 
 	*/
-	static render(scene:Scene, cn:HTMLCanvasElement) {
+	static render(scene: Scene, cn: HTMLCanvasElement) {
 
 		// Render every Model in the Scene.
-		for(const position of scene.positionList) {
+		for (const position of scene.positionList) {
 			if (position.model.visible) {
 
 				// 1. Apply the Position's model-to-view coordinate transformation
@@ -27,7 +27,7 @@ class Pipeline {
 				const model4 = Projection.project(model3, scene.camera);
 
 				// 3. Rasterize each visible line segment into pixels.
-				for(const ls of model4.lineSegmentList) {
+				for (const ls of model4.lineSegmentList) {
 					Rasterize.rasterize(model4, ls, cn);
 				}
 			}

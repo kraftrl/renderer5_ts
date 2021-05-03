@@ -11,7 +11,7 @@ class RasterizeAntialias {
 
         //RasterizeAntialias.doGamma = gam;
         //RasterizeAntialias.doAntialiasing = antialias;
-        let debug: boolean = RasterizeAntialias.debug && (Pipeline.debug || model.debug);
+        let debug: boolean = RasterizeAntialias.debug && (PipelineFB.debug || model.debug);
 
         // Get viewport's background color
         const bg = vp.bgColorVP;
@@ -53,7 +53,7 @@ class RasterizeAntialias {
         // Rasterize a degenerate line segment as a single pixel
         if ((x0 == x1) && (y0 == y1)) {
             if (debug) {
-                // Debug log pixel info
+                RasterizeAntialias.logPixel(Math.floor(x0), y0, model.colorList[ls.cIndex[0]], w, h);
             }
 
             const x0_vp = Math.floor(x0) - 1;
@@ -157,10 +157,13 @@ class RasterizeAntialias {
                     b_hi = Math.pow(b_hi/255, gamma) * 255;
                 }
 
+                let col1 = rgbToHex(Math.floor(r_low), Math.floor(g_low), Math.floor(b_low));
+                let col2 = rgbToHex(Math.floor(r_hi), Math.floor(g_hi), Math.floor(b_hi));
+
                 // Set this antialiased pixel in the Framebuffer
                 if (!transposedLine) {
                     if (debug) {
-                        // Debug log antialiased pixel info
+                        RasterizeAntialias.logAAPixelsH(x, y, y_low, y_hi, col1, col2, w, h);
                     }
 
                     // Viewport coordinates
@@ -174,7 +177,7 @@ class RasterizeAntialias {
                 }
                 else {
                     if (debug) {
-                        // Debug log pixel info
+                        RasterizeAntialias.logAAPixelsV(y, x, y_low, y_hi, col1, col2, w, h);
                     }
 
                     // Viewport coordinates
@@ -201,7 +204,7 @@ class RasterizeAntialias {
                 // logical vertical (or horizontal) pixel coordinate
                 if (!transposedLine) {
                     if (debug) {
-                        // Debug log pixel info
+                        RasterizeAntialias.logPixel(x, y, rgbToHex(Math.floor(r), Math.floor(g), Math.floor(b)), w, h);
                     }
 
                     // Viewport coordinates
@@ -211,7 +214,7 @@ class RasterizeAntialias {
                 }
                 else {
                     if (debug) {
-                        // Debug log pixel info
+                        RasterizeAntialias.logPixel(y, x, rgbToHex(Math.floor(r), Math.floor(g), Math.floor(b)), w, h);
                     }
 
                     // Viewport coordinates
@@ -225,7 +228,7 @@ class RasterizeAntialias {
         // For the x1, y1 endpoint
         if (!transposedLine) {
             if (debug) {
-                // Debug log pixel info
+                RasterizeAntialias.logPixel(Math.floor(x1), y1, rgbToHex(Math.floor(r1), Math.floor(g1), Math.floor(b1)), w, h);
             }
 
             // Viewport coordinates
@@ -235,7 +238,7 @@ class RasterizeAntialias {
         }
         else {
             if (debug) {
-                // Debug log pixel info
+                RasterizeAntialias.logPixel(Math.floor(y1), x1, rgbToHex(Math.floor(r1), Math.floor(g1), Math.floor(b1)), w, h);
             }
 
             // Viewport coordinates
@@ -244,7 +247,22 @@ class RasterizeAntialias {
             vp.setPixelVP(x_vp, y_vp, rgbToHex(r1, g1, b1));
         }
 
-	}
+    }
+
+
+    static logPixel(x: number, y: number, c: string, w: number, h: number) {
+        console.log("[w = " + w + ", h = " + h + "]   x = " + x + ", y = " + y + ", c = " + c + "\n");
+    }
+
+    static logAAPixelsH(x: number, y: number, y1: number, y2: number, c1: string, c2: string, w: number, h: number) {
+        console.log("[w = " + w.toString().padStart(4) + ", h = " + h.toString().padStart(4) + "]   x = " + x + ", y = " + y + ", y_low = " + y1 + " c = " + c1 + "\n");
+        console.log("                       x = " + x + ", y = " + y + ", y_hi = " + y2 + " c = " + c2 + "\n");
+    }
+
+    static logAAPixelsV(x: number, y: number, x1: number, x2: number, c1: string, c2: string, w: number, h: number) {
+        console.log("[w = " + w.toString().padStart(4) + ", h = " + h.toString().padStart(4) + "]   x = " + x + ", y = " + y + ", x_low = " + x1 + " c = " + c1 + "\n");
+        console.log("                       x = " + x + ", y = " + y + ", x_hi = " + x2 + " c = " + c2 + "\n");
+    }
 }
 
 /*

@@ -1,9 +1,10 @@
 
 const scene = new Scene();
-//scene.camera.projPerspective();
 scene.camera.projPerspectiveReset();
-//RasterizeAntialias.doGamma = false;
 RasterizeAntialias.doAntialiasing = true;
+//PipelineFB.debug = true;
+//Clip.debug = true;
+//RasterizeAntialias.debug = true;
 
 scene.addPosition( [new Position(new   Cube())] );
 scene.addPosition( [new Position(new  Cube2())] );
@@ -30,7 +31,6 @@ for(const vertex of axes.vertexList) {
 let currentPosition = 0;
 scene.positionList[currentPosition].model.visible = true;
 
-console.log(scene);
 print_help_message();
 
 const cn = <HTMLCanvasElement>document.getElementById("pixels");
@@ -40,11 +40,7 @@ let fb: FrameBuffer;
 if (ctx != null) {
 	ctx.canvas.width = window.innerWidth;
 	ctx.canvas.height = window.innerHeight;
-	fb = new FrameBuffer(ctx.canvas.width, ctx.canvas.height, '#000000');
-		//fb = new FrameBuffer(900, 900, '#000000');
-		//ctx.canvas.width = fb.getWidthFB();
-		//ctx.canvas.height = fb.getHeightFB();
-	console.log("FrameBuffer created with width = " + fb.getWidthFB() + " and height = " + fb.getHeightFB());
+	fb = new FrameBuffer(window.innerWidth, window.innerHeight, '#000000');
 	
 	PipelineFB.render(scene, fb);
 
@@ -52,9 +48,9 @@ if (ctx != null) {
 		for (var x = 0; x < fb.getWidthFB(); x++) {
 			ctx.fillStyle = fb.getPixelFB(x, y);
 			ctx.fillRect(x, y, 1, 1);
-			//ctx.putImageData(imageData, x, y);
 		}
 	}
+
 	
 }
 else {
@@ -87,8 +83,36 @@ function keyPressed(event: { key: string }) {
 		print_help_message();
 	}
 	else if ('d' == c) {
-		// nothing yet
+		// Debug on for current model (default off)
+		scene.positionList[currentPosition].model.debug = true;
+		console.log("Model debug messages on");
+		console.log(scene.positionList[currentPosition].model.toString());
 	}
+	else if ('D' == c) {
+		// Debug off for current model
+		scene.positionList[currentPosition].model.debug = false;
+		console.log("Model debug messages off");
+	}
+	else if ('a' == c) {
+		// Antialiasing off (default on)
+		RasterizeAntialias.doAntialiasing = false;
+		console.log("Antialiasing off");
+	}
+	else if ('A' == c) {
+		// Antialiasing on
+		RasterizeAntialias.doAntialiasing = true;
+		console.log("Antialiasing on");
+	}
+	else if ('g' == c) {
+		// Gamma off (default on)
+		RasterizeAntialias.doGamma = false;
+		console.log("Gamma off");
+	}
+	else if ('G' == c) {
+		// Gamma on
+		RasterizeAntialias.doGamma = true;
+		console.log("Gamma on");
+    }
 	else if ('p' == c) {
 		scene.camera.perspective = ! scene.camera.perspective;
 		let p = scene.camera.perspective ? "perspective" : "orthographic";
@@ -225,10 +249,6 @@ function keyPressed(event: { key: string }) {
 		ctx.canvas.width = window.innerWidth;
 		ctx.canvas.height = window.innerHeight;
 		fb = new FrameBuffer(ctx.canvas.width, ctx.canvas.height, '#000000');
-		//fb = new FrameBuffer(900, 900, '#000000');
-		//ctx.canvas.width = fb.getWidthFB();
-		//ctx.canvas.height = fb.getHeightFB();
-		console.log("FrameBuffer created with width = " + fb.getWidthFB() + " and height = " + fb.getHeightFB());
 
 		PipelineFB.render(scene, fb);
 
@@ -266,6 +286,8 @@ function keyPressed(event: { key: string }) {
 function print_help_message()
 {
 	console.log("Use the 'd/D' keys to toggle debugging information on and off for the current model.");
+	console.log("Use the 'a/A' keys to toggle antialiasing on and off");
+	console.log("Use the 'g/G' keys to toggle gamma on and off");
 	console.log("Use the '/' key to cycle through the models.");
 
 	// Camera controls

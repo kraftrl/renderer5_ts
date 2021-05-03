@@ -17,4 +17,19 @@ class Position {
         this.matrix = Matrix.identity();
         return this.matrix;
     }
+
+    toString() {
+        let result = "";
+        result += "This Position's Matrix is:\n";
+        result += this.matrix.toString();
+        result += "This Position's Model is:\n";
+        if (null == this.model) {
+            result += "null\n";
+        }
+        else {
+            result += this.model.toString();
+        }
+
+        return result;
+    }
 }

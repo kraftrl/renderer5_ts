@@ -26,4 +26,10 @@ class LineSegment {
 		this.cIndex[0] = c0;
 		this.cIndex[1] = c1;
 	}
+
+
+	//For debugging
+	toString() {
+		return "Line Segment: ([" + this.vIndex[0] + ", " + this.vIndex[1] + "], [" + this.cIndex[0] + ", " + this.cIndex[1] + "])\n";
+    }
 }

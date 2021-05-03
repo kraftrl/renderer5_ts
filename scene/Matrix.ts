@@ -140,4 +140,42 @@ class Matrix {
         const vec: Vector = this.v1.times(v.x).plus(this.v2.times(v.y).plus(this.v3.times(v.z).plus(this.v4.times(v.w))));
         return new Vertex(vec.x, vec.y, vec.z, vec.w);
     }
+
+
+    // For debugging
+    toString() {
+        let result = "";
+        const p = 5; // The precision for the following format string
+        const w = p + 4; // The width for the following format string
+
+        let x1: string = this.v1.x.toPrecision(p);
+        let y1: string = this.v1.y.toPrecision(p);
+        let z1: string = this.v1.z.toPrecision(p);
+        let w1: string = this.v1.w.toPrecision(p);
+
+        let x2: string = this.v2.x.toPrecision(p);
+        let y2: string = this.v2.y.toPrecision(p);
+        let z2: string = this.v2.z.toPrecision(p);
+        let w2: string = this.v2.w.toPrecision(p);
+
+        let x3: string = this.v3.x.toPrecision(p);
+        let y3: string = this.v3.y.toPrecision(p);
+        let z3: string = this.v3.z.toPrecision(p);
+        let w3: string = this.v3.w.toPrecision(p);
+
+        let x4: string = this.v4.x.toPrecision(p);
+        let y4: string = this.v4.y.toPrecision(p);
+        let z4: string = this.v4.z.toPrecision(p);
+        let w4: string = this.v4.w.toPrecision(p);
+
+
+
+
+        result += "[[" + x1.padStart(w) + "  " + y1.padStart(w) + "  " + z1.padStart(w) + "  " + w1.padStart(w) + "]\n";
+        result += " [" + x2.padStart(w) + "  " + y2.padStart(w) + "  " + z2.padStart(w) + "  " + w2.padStart(w) + "]\n";
+        result += " [" + x3.padStart(w) + "  " + y3.padStart(w) + "  " + z3.padStart(w) + "  " + w3.padStart(w) + "]\n";
+        result += " [" + x4.padStart(w) + "  " + y4.padStart(w) + "  " + z4.padStart(w) + "  " + w4.padStart(w) + "]]\n";
+
+        return result;
+    }
 }

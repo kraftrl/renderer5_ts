@@ -108,7 +108,7 @@ class FrameBuffer {
         return blue_fb;
     }
 
-/*
+    /*
     dump2File(filename: string) {
         this.dumpPixels2File(0, 0, this.width - 1, this.height - 1, filename);
     }
@@ -125,7 +125,7 @@ class FrameBuffer {
         let tempRow: string = "";
 
         for (var n = 0; n < p_height; n++) {
-            /*
+            
             for (var i = 0; i < temp.length; i += 3) {
                 const c = this.pixel_buffer[((ul_y + n) * this.width + ul_x) + i / 3];
                 temp[i + 0] = Math.floor(hexToRGB(c)[0]);
@@ -146,4 +146,15 @@ class FrameBuffer {
         writeStream.end();
     }
     */
+
+    toString() {
+        let result = "FrameBuffer [w = " + this.width + ", h = " + this.height + "]\n";
+        for (var i = 0; i < this.height; ++i) {
+            for (var j = 0; j < this.width; ++j) {
+                result += this.getPixelFB(j, i) + " ";
+            }
+            result += "\n";
+        }
+        return result;
+    }
 }

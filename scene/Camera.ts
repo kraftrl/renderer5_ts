@@ -32,7 +32,7 @@ class Camera {
 	}
 
 
-	projPerspective(left: number, right: number, top: number, bottom: number, near: number) {
+	projPerspective(left: number, right: number, bottom: number, top: number, near: number) {
 		this.left = left;
 		this.right = right;
 		this.top = top;
@@ -50,7 +50,7 @@ class Camera {
     }
 
 
-	projOrtho(left: number, right: number, top: number, bottom: number) {
+	projOrtho(left: number, right: number, bottom: number, top: number) {
 		this.left = left;
 		this.right = right;
 		this.top = top;
@@ -64,5 +64,25 @@ class Camera {
 
 	projOrthoReset() {
 		this.projOrtho(-1.0, 1.0, -1.0, 1.0);
+	}
+
+
+	// For debugging
+	toString() {
+		const fovy = 2.0 * (180. / Math.PI) * Math.atan(this.top / -this.n);
+		const ratio = (this.right - this.left) / (this.top - this.bottom);
+		let result = "";
+		result += "Camera: \n";
+		result += "perspective = " + this.perspective + "\n";
+		result += "left = " + this.left + ", "
+			+ "right = " + this.right + "\n"
+			+ "bottom = " + this.bottom + ", "
+			+ "top = " + this.top + "\n"
+			+ "near = " + -this.n + "\n"
+			+ "(fovy = " + fovy + ", aspect = " + ratio + ")\n"
+			+ "Normalization Matrix\n"
+			+ this.normalizeMatrix.toString();
+
+		return result;
     }
 }
