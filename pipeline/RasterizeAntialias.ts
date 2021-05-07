@@ -23,12 +23,12 @@ class RasterizeAntialias {
         const v0: Vertex = Object.assign({}, model.vertexList[ls.vIndex[0]]);
         const v1: Vertex = Object.assign({}, model.vertexList[ls.vIndex[1]]);
 
-        const c0 = hexToRGB(model.colorList[ls.cIndex[0]]);
-        const c1 = hexToRGB(model.colorList[ls.cIndex[1]]);
+        const c0 = new Uint8ClampedArray([model.colorList[ls.cIndex[0]][0], model.colorList[ls.cIndex[0]][1], model.colorList[ls.cIndex[0]][2], model.colorList[ls.cIndex[0]][3]]);
+        const c1 = new Uint8ClampedArray([model.colorList[ls.cIndex[1]][0], model.colorList[ls.cIndex[1]][1], model.colorList[ls.cIndex[1]][2], model.colorList[ls.cIndex[1]][3]]);
 
-        let r0 = c0[0], g0 = c0[1], b0 = c0[2];
+        let r0 = c0[0], g0 = c0[1], b0 = c0[2], a0 = c0[3];
         //console.log(r0 + " " + g0 + " " + g0);
-        let r1 = c1[0], g1 = c1[1], b1 = c1[2];
+        let r1 = c1[0], g1 = c1[1], b1 = c1[2], a1 = c1[3];
         //console.log(r1 + " " + g1 + " " + g1);
         
         // Transform each vertex to the "pixel plane" coordinate system.
@@ -58,7 +58,7 @@ class RasterizeAntialias {
 
             const x0_vp = Math.floor(x0) - 1;
             const y0_vp = h - Math.floor(y0);
-            vp.setPixelVP(x0_vp, y0_vp, rgbToHex(r0, g0, b0));
+            vp.setPixelVP(x0_vp, y0_vp, new Uint8ClampedArray([r0, g0, b0, a0]));
             return;
         }
 
@@ -94,6 +94,9 @@ class RasterizeAntialias {
             const tempB = b0;
             b0 = b1;
             b1 = tempB;
+            const tempA = a0;
+            a0 = a1;
+            a1 = tempA;
         }
 
 
@@ -103,6 +106,7 @@ class RasterizeAntialias {
         const slopeR = (r1 - r0) / (x1 - x0);
         const slopeG = (g1 - g0) / (x1 - x0);
         const slopeB = (b1 - b0) / (x1 - x0);
+        const slopeA = (a1 - a0) / (x1 - x0);
 
 
         // Rasterize this line segment in the direction of increasing x.
@@ -115,6 +119,7 @@ class RasterizeAntialias {
             let r = Math.abs(r0 + slopeR * (x - x0));
             let g = Math.abs(g0 + slopeG * (x - x0));
             let b = Math.abs(b0 + slopeB * (x - x0));
+            let a = Math.abs(a0 + slopeA * (x - x0));
             //console.log(r + " " + g + " " + b);
 
             if (RasterizeAntialias.doAntialiasing) {
@@ -140,12 +145,14 @@ class RasterizeAntialias {
 
                 // Interpolate colors for the low and high pixels
                 // The smaller the weight, the closer the color is to the low pixel
-                let r_low = (1 - weight) * r + weight * hexToRGB(bg)[0];
-                let g_low = (1 - weight) * g + weight * hexToRGB(bg)[1];
-                let b_low = (1 - weight) * b + weight * hexToRGB(bg)[2];
-                let r_hi = weight * r + (1 - weight) * hexToRGB(bg)[0];
-                let g_hi = weight * g + (1 - weight) * hexToRGB(bg)[1];
-                let b_hi = weight * b + (1 - weight) * hexToRGB(bg)[2];
+                let r_low = (1 - weight) * r + weight * bg[0];
+                let g_low = (1 - weight) * g + weight * bg[1];
+                let b_low = (1 - weight) * b + weight * bg[2];
+                let a_low = (1 - weight) * a + weight * bg[3];
+                let r_hi = weight * r + (1 - weight) * bg[0];
+                let g_hi = weight * g + (1 - weight) * bg[1];
+                let b_hi = weight * b + (1 - weight) * bg[2];
+                let a_hi = weight * a + (1 - weight) * bg[3];
 
                 if (RasterizeAntialias.doGamma) {
                     const gamma = 1 / 2.2;
@@ -154,11 +161,13 @@ class RasterizeAntialias {
                     g_low = Math.pow(g_low/255, gamma) * 255;
                     g_hi = Math.pow(g_hi/255, gamma) * 255;
                     b_low = Math.pow(b_low/255, gamma) * 255;
-                    b_hi = Math.pow(b_hi/255, gamma) * 255;
+                    b_hi = Math.pow(b_hi / 255, gamma) * 255;
+                    a_low = Math.pow(a_low / 255, gamma) * 255;
+                    a_hi = Math.pow(a_hi / 255, gamma) * 255;
                 }
 
-                let col1 = rgbToHex(Math.floor(r_low), Math.floor(g_low), Math.floor(b_low));
-                let col2 = rgbToHex(Math.floor(r_hi), Math.floor(g_hi), Math.floor(b_hi));
+                let col1 = new Uint8ClampedArray([Math.floor(r_low), Math.floor(g_low), Math.floor(b_low), Math.floor(a_low)]);
+                let col2 = new Uint8ClampedArray([Math.floor(r_hi), Math.floor(g_hi), Math.floor(b_hi), Math.floor(a_hi)]);
 
                 // Set this antialiased pixel in the Framebuffer
                 if (!transposedLine) {
@@ -171,8 +180,8 @@ class RasterizeAntialias {
                     const y_vp_low = h - y_low;
                     const y_vp_hi = h - y_hi;
 
-                    vp.setPixelVP(x_vp, y_vp_low, rgbToHex(r_low, g_low, b_low));
-                    vp.setPixelVP(x_vp, y_vp_hi, rgbToHex(r_hi, g_hi, b_hi));
+                    vp.setPixelVP(x_vp, y_vp_low, new Uint8ClampedArray([r_low, g_low, b_low, a_low]));
+                    vp.setPixelVP(x_vp, y_vp_hi, new Uint8ClampedArray([r_hi, g_hi, b_hi, a_hi]));
                    
                 }
                 else {
@@ -185,8 +194,8 @@ class RasterizeAntialias {
                     const x_vp_hi = y_hi - 1;
                     const y_vp = h - x;
 
-                    vp.setPixelVP(x_vp_low, y_vp, rgbToHex(r_low, g_low, b_low));
-                    vp.setPixelVP(x_vp_hi, y_vp, rgbToHex(r_hi, g_hi, b_hi));
+                    vp.setPixelVP(x_vp_low, y_vp, new Uint8ClampedArray([r_low, g_low, b_low, a_low]));
+                    vp.setPixelVP(x_vp_hi, y_vp, new Uint8ClampedArray([r_hi, g_hi, b_hi, a_hi]));
                 }
             }
             else {
@@ -195,7 +204,8 @@ class RasterizeAntialias {
                     const gamma = 1 / 2.2;
                     r = Math.pow(r/255, gamma) * 255;
                     g = Math.pow(g/255, gamma) * 255;
-                    b = Math.pow(b/255, gamma) * 255;
+                    b = Math.pow(b / 255, gamma) * 255;
+                    a = Math.pow(a / 255, gamma) * 255;
                 }
 
                 // The value of y will almost always be between two vertical
@@ -204,23 +214,23 @@ class RasterizeAntialias {
                 // logical vertical (or horizontal) pixel coordinate
                 if (!transposedLine) {
                     if (debug) {
-                        RasterizeAntialias.logPixel(x, y, rgbToHex(Math.floor(r), Math.floor(g), Math.floor(b)), w, h);
+                        RasterizeAntialias.logPixel(x, y, new Uint8ClampedArray([Math.floor(r), Math.floor(g), Math.floor(b), Math.floor(a)]), w, h);
                     }
 
                     // Viewport coordinates
                     const x_vp = x - 1;
                     const y_vp = h - Math.round(y);
-                    vp.setPixelVP(x_vp, y_vp, rgbToHex(r, g, b));
+                    vp.setPixelVP(x_vp, y_vp, new Uint8ClampedArray([Math.floor(r), Math.floor(g), Math.floor(b), Math.floor(a)]));
                 }
                 else {
                     if (debug) {
-                        RasterizeAntialias.logPixel(y, x, rgbToHex(Math.floor(r), Math.floor(g), Math.floor(b)), w, h);
+                        RasterizeAntialias.logPixel(y, x, new Uint8ClampedArray([Math.floor(r), Math.floor(g), Math.floor(b), Math.floor(a)]), w, h);
                     }
 
                     // Viewport coordinates
                     const x_vp = Math.round(y) - 1;
                     const y_vp = h - x;
-                    vp.setPixelVP(x_vp, y_vp, rgbToHex(r, g, b));
+                    vp.setPixelVP(x_vp, y_vp, new Uint8ClampedArray([Math.floor(r), Math.floor(g), Math.floor(b), Math.floor(a)]));
                 }
             }
         }
@@ -228,40 +238,40 @@ class RasterizeAntialias {
         // For the x1, y1 endpoint
         if (!transposedLine) {
             if (debug) {
-                RasterizeAntialias.logPixel(Math.floor(x1), y1, rgbToHex(Math.floor(r1), Math.floor(g1), Math.floor(b1)), w, h);
+                RasterizeAntialias.logPixel(Math.floor(x1), y1, new Uint8ClampedArray([Math.floor(r1), Math.floor(g1), Math.floor(b1), Math.floor(a1)]), w, h);
             }
 
             // Viewport coordinates
             const x_vp = Math.floor(x1) - 1;
             const y_vp = h - Math.floor(y1);
-            vp.setPixelVP(x_vp, y_vp, rgbToHex(r1, g1, b1));
+            vp.setPixelVP(x_vp, y_vp, new Uint8ClampedArray([r1, g1, b1, a1]));
         }
         else {
             if (debug) {
-                RasterizeAntialias.logPixel(Math.floor(y1), x1, rgbToHex(Math.floor(r1), Math.floor(g1), Math.floor(b1)), w, h);
+                RasterizeAntialias.logPixel(Math.floor(y1), x1, new Uint8ClampedArray([Math.floor(r1), Math.floor(g1), Math.floor(b1), Math.floor(a1)]), w, h);
             }
 
             // Viewport coordinates
             const x_vp = Math.floor(y1) - 1;
             const y_vp = h - Math.floor(x1);
-            vp.setPixelVP(x_vp, y_vp, rgbToHex(r1, g1, b1));
+            vp.setPixelVP(x_vp, y_vp, new Uint8ClampedArray([r1, g1, b1, a1]));
         }
 
     }
 
 
-    static logPixel(x: number, y: number, c: string, w: number, h: number) {
-        console.log("[w = " + w + ", h = " + h + "]   x = " + x + ", y = " + y + ", c = " + c + "\n");
+    static logPixel(x: number, y: number, c: Uint8ClampedArray, w: number, h: number) {
+        console.log("[w = " + w + ", h = " + h + "]   x = " + x + ", y = " + y + ", c = " + c[0] + " " + c[1] + " " + c[2] + " " + c[3] + "\n");
     }
 
-    static logAAPixelsH(x: number, y: number, y1: number, y2: number, c1: string, c2: string, w: number, h: number) {
-        console.log("[w = " + w.toString().padStart(4) + ", h = " + h.toString().padStart(4) + "]   x = " + x + ", y = " + y + ", y_low = " + y1 + " c = " + c1 + "\n");
-        console.log("                       x = " + x + ", y = " + y + ", y_hi = " + y2 + " c = " + c2 + "\n");
+    static logAAPixelsH(x: number, y: number, y1: number, y2: number, c1: Uint8ClampedArray, c2: Uint8ClampedArray, w: number, h: number) {
+        console.log("[w = " + w.toString().padStart(4) + ", h = " + h.toString().padStart(4) + "]   x = " + x + ", y = " + y + ", y_low = " + y1 + " c = " + c1[0] + " " + c1[1] + " " + c1[2] + " " + c1[3] + "\n");
+        console.log("                       x = " + x + ", y = " + y + ", y_hi = " + y2 + " c = " + c2[0] + " " + c2[1] + " " + c2[2] + " " + c2[3] + "\n");
     }
 
-    static logAAPixelsV(x: number, y: number, x1: number, x2: number, c1: string, c2: string, w: number, h: number) {
-        console.log("[w = " + w.toString().padStart(4) + ", h = " + h.toString().padStart(4) + "]   x = " + x + ", y = " + y + ", x_low = " + x1 + " c = " + c1 + "\n");
-        console.log("                       x = " + x + ", y = " + y + ", x_hi = " + x2 + " c = " + c2 + "\n");
+    static logAAPixelsV(x: number, y: number, x1: number, x2: number, c1: Uint8ClampedArray, c2: Uint8ClampedArray, w: number, h: number) {
+        console.log("[w = " + w.toString().padStart(4) + ", h = " + h.toString().padStart(4) + "]   x = " + x + ", y = " + y + ", x_low = " + x1 + " c = " + c1[0] + " " + c1[1] + " " + c1[2] + " " + c1[3] + "\n");
+        console.log("                       x = " + x + ", y = " + y + ", x_hi = " + x2 + " c = " + c2[0] + " " + c2[1] + " " + c2[2] + " " + c2[3] + "\n");
     }
 }
 

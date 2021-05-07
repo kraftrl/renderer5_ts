@@ -10,7 +10,7 @@ class Model {
 	name: string;
 	vertexList: Array<Vertex>;
 	lineSegmentList: Array<LineSegment>;
-	colorList: Array<string>;
+	colorList: Array<Uint8ClampedArray>;
 	visible: boolean;
 	debug: boolean;
 	/**
@@ -19,7 +19,7 @@ class Model {
 	constructor(name: string = "",
 				vertexList: Array<Vertex> = [],
 				lineSegmentList: Array<LineSegment> = [],
-				colorList: Array<string> = [],
+				colorList: Array<Uint8ClampedArray> = [],
 				visible: boolean = true,
 				debug: boolean = false)
 	{
@@ -55,8 +55,8 @@ class Model {
 	/**
 
 	*/
-	addColor() {
-		for(const c of arguments) {
+	addColor(addColorList: Array<Uint8ClampedArray>) {
+		for(const c of addColorList) {
 			this.colorList.push(c);
 		}
 	}
@@ -81,7 +81,7 @@ class Model {
 		result += "Printing out this Model's colors:\n";
 		i = 0;
 		for (const c of this.colorList) {
-			result += i + ": " + c + "\n";
+			result += i + ": " + c[0] + " " + c[1] + " " + c[2] + " " + c[3] +  "\n";
 			++i;
 		}
 

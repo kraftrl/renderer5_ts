@@ -88,7 +88,7 @@ class PipelineFB {
 		if (PipelineFB.debug || model.debug) {
 			let i = 0;
 			for (const c of model.colorList) {
-				let message = stage + ": cIndex = " + i.toString().padStart(3) + ", " + c;
+				let message = stage + ": cIndex = " + i.toString().padStart(3) + ", " + c[0] + " " + c[1] + " " + c[2] + " " + c[3];
 				console.log(message);
 				++i;
 			}
@@ -121,8 +121,8 @@ class PipelineFB {
 			const c0 = model.colorList[cIndex0];
 			const c1 = model.colorList[cIndex1];
 
-			console.log("   cIndex = " + cIndex0.toString().padStart(3) + ", " + c0 + "\n");
-			console.log("   cIndex = " + cIndex1.toString().padStart(3) + ", " + c1 + "\n");
+			console.log("   cIndex = " + cIndex0.toString().padStart(3) + ", " + c0[0] + " " + c0[1] + " " + c0[2] + " " + c0[3] + "\n");
+			console.log("   cIndex = " + cIndex1.toString().padStart(3) + ", " + c1[0] + " " + c1[1] + " " + c1[2] + " " + c1[3] + "\n");
 		}
 	}
 

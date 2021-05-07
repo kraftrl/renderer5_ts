@@ -2,14 +2,14 @@ class FrameBuffer {
 
     width: number;
     height: number;
-    pixel_buffer: Array<string>;
-    bgColorFB: string;
+    pixel_buffer: Uint8ClampedArray;
+    bgColorFB: Uint8ClampedArray;
     vp: Viewport;
 
-    constructor(w: number, h: number, c: string) {
+    constructor(w: number, h: number, c: Uint8ClampedArray) {
         this.width = w;
         this.height = h;
-        this.pixel_buffer = [];
+        this.pixel_buffer = new Uint8ClampedArray(this.width * this.height * 4);
         this.bgColorFB = c;
         this.clearFB(this.bgColorFB);
 
@@ -30,7 +30,7 @@ class FrameBuffer {
         return this.vp;
     }
 
-    setViewPort(vp_ul_x: number, vp_ul_y: number, width: number, height: number, c: string) {
+    setViewPort(vp_ul_x: number, vp_ul_y: number, width: number, height: number, c: Uint8ClampedArray) {
         this.vp = new Viewport(vp_ul_x, vp_ul_y, width, height, c, this);
     }
 
@@ -38,13 +38,13 @@ class FrameBuffer {
         return this.bgColorFB;
     }
 
-    setBackgroundColorFB(c: string) {
+    setBackgroundColorFB(c: Uint8ClampedArray) {
         this.bgColorFB = c;
     }
 
 
     // Clears framebuffer, resetting all pixels to the default background color
-    clearFB(c: string) {
+    clearFB(c: Uint8ClampedArray) {
         for (var y = 0; y < this.height; y++) {
             for (var x = 0; x < this.width; x++) {
                 this.setPixelFB(x, y, c);
@@ -54,25 +54,30 @@ class FrameBuffer {
 
     // Get the pixel color based on the coordinates
     getPixelFB(x: number, y: number) {
-        const index = y * this.width + x;
-        try {
-            return this.pixel_buffer[index];
+        const index = y * (this.width * 4) + (4 * x);
+        if (index < this.pixel_buffer.length) {
+            return new Uint8ClampedArray([this.pixel_buffer[index], this.pixel_buffer[index + 1], this.pixel_buffer[index + 2], this.pixel_buffer[index + 3]]);
         }
-        catch (err) {
+        else {
             console.log('FrameBuffer: Bad pixel coordinate (' + x + ', ' + y + ')');
-            return "#FFFFFF";
+            return new Uint8ClampedArray([255, 255, 255, 255]);
         }
     }
 
     // Set pixel color for a pixel at the given coordinates
-    setPixelFB(x: number, y: number, c: string) {
-        const index = y * this.width + x;
-        try {
-            this.pixel_buffer[index] = c;
+    setPixelFB(x: number, y: number, c: Uint8ClampedArray) {
+        //const index = y * this.width + x;
+        const index = y * (4 * this.width) + (4 * x);
+        if (index < this.pixel_buffer.length) {
+            this.pixel_buffer[index] = c[0];
+            this.pixel_buffer[index + 1] = c[1];
+            this.pixel_buffer[index + 2] = c[2];
+            this.pixel_buffer[index + 3] = c[3];
+            //return new Uint8ClampedArray([this.pixel_buffer[index], this.pixel_buffer[index + 1], this.pixel_buffer[index + 2], this.pixel_buffer[index + 3]]);
         }
-        catch (err) {
+        else {
             console.log('FrameBuffer: Bad pixel coordinate (' + x + ', ' + y + ')');
-            return "#FFFFFF";
+            //return new Uint8ClampedArray([255, 255, 255, 255]);
         }
     }
 
@@ -81,7 +86,7 @@ class FrameBuffer {
         const red_fb: FrameBuffer = new FrameBuffer(this.width, this.height, this.bgColorFB);
         for (var y = 0; y < this.height; y++) {
             for (var x = 0; x < this.width; x++) {
-                const c: string = rgbToHex(hexToRGB(this.getPixelFB(x, y))[0], 0, 0);
+                const c: Uint8ClampedArray = new Uint8ClampedArray([this.getPixelFB(x, y)[0], 0, 0, 0]);
                 red_fb.setPixelFB(x, y, c);
             }
         }
@@ -91,7 +96,7 @@ class FrameBuffer {
         const green_fb: FrameBuffer = new FrameBuffer(this.width, this.height, this.bgColorFB);
         for (var y = 0; y < this.height; y++) {
             for (var x = 0; x < this.width; x++) {
-                const c: string = rgbToHex(0, hexToRGB(this.getPixelFB(x, y))[1], 0);
+                const c: Uint8ClampedArray = new Uint8ClampedArray([0, this.getPixelFB(x, y)[0], 0, 0]);
                 green_fb.setPixelFB(x, y, c);
             }
         }
@@ -101,7 +106,7 @@ class FrameBuffer {
         const blue_fb: FrameBuffer = new FrameBuffer(this.width, this.height, this.bgColorFB);
         for (var y = 0; y < this.height; y++) {
             for (var x = 0; x < this.width; x++) {
-                const c: string = rgbToHex(0, 0, hexToRGB(this.getPixelFB(x, y))[2]);
+                const c: Uint8ClampedArray = new Uint8ClampedArray([0, 0, this.getPixelFB(x, y)[0], 0]);
                 blue_fb.setPixelFB(x, y, c);
             }
         }
@@ -128,17 +133,17 @@ class FrameBuffer {
             
             for (var i = 0; i < temp.length; i += 3) {
                 const c = this.pixel_buffer[((ul_y + n) * this.width + ul_x) + i / 3];
-                temp[i + 0] = Math.floor(hexToRGB(c)[0]);
-                temp[i + 1] = Math.floor(hexToRGB(c)[1]);
-                temp[i + 2] = Math.floor(hexToRGB(c)[2]);
+                temp[i + 0] = c[0];
+                temp[i + 1] = c[1];
+                temp[i + 2] = c[2];
             }
             
 
             for (var i = 0; i < p_width * 3; i += 3) {
                 const c = this.pixel_buffer[((ul_y + n) * this.width + ul_x) + i / 3];
-                tempRow = tempRow + Math.floor(hexToRGB(c)[0]) + " ";
-                tempRow = tempRow + Math.floor(hexToRGB(c)[1]) + " ";
-                tempRow = tempRow + Math.floor(hexToRGB(c)[2]) + " ";
+                tempRow = tempRow + c[0] + " ";
+                tempRow = tempRow + c[1] + " ";
+                tempRow = tempRow + c[2] + " ";
             }
             tempRow = tempRow + "\n";
             writeStream.write(tempRow);
@@ -147,14 +152,15 @@ class FrameBuffer {
     }
     */
 
+
     toString() {
         let result = "FrameBuffer [w = " + this.width + ", h = " + this.height + "]\n";
-        for (var i = 0; i < this.height; ++i) {
-            for (var j = 0; j < this.width; ++j) {
-                result += this.getPixelFB(j, i) + " ";
+        for (var j = 0; j < this.height; ++j) {
+            for (var i = 0; i < this.width; ++i) {
+                result += this.getPixelFB(i, j)[0] + " " + this.getPixelFB(i, j)[1] + " " + this.getPixelFB(i, j)[2] + " " + this.getPixelFB(i, j)[3] + " | ";
             }
             result += "\n";
         }
         return result;
-    }
+    }  
 }

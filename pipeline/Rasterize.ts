@@ -49,8 +49,8 @@ class Rasterize {
 			// Use the clipping and rasterizing algorithms
 			// built into the browser's canvas.
 			const grd = ctx.createLinearGradient(x0, y0, x1, y1);
-			grd.addColorStop(0, c0);
-			grd.addColorStop(1, c1);
+			grd.addColorStop(0, rgbToHex(c0[0], c0[1], c0[2]));
+			grd.addColorStop(1, rgbToHex(c1[0], c1[1], c1[2]));
 			ctx.strokeStyle = grd;
 			ctx.beginPath();
 			ctx.moveTo(x0, y0);

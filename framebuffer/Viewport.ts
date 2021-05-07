@@ -3,11 +3,11 @@ class Viewport {
     vp_ul_y: number;
     vp_lr_x: number;
     vp_lr_y: number;
-    bgColorVP: string;
+    bgColorVP: Uint8ClampedArray;
     fbParent: FrameBuffer;
 
 
-    constructor(ul_x: number, ul_y: number, width: number, height: number, c: string, fb: FrameBuffer) {
+    constructor(ul_x: number, ul_y: number, width: number, height: number, c: Uint8ClampedArray, fb: FrameBuffer) {
         this.vp_ul_x = ul_x;
         this.vp_ul_y = ul_y;
         this.vp_lr_x = this.vp_ul_x + width - 1;
@@ -36,11 +36,11 @@ class Viewport {
         return this.bgColorVP;
     }
 
-    setBackgroundColorVP(c: string) {
+    setBackgroundColorVP(c: Uint8ClampedArray) {
         this.bgColorVP = c;
     }
 
-    clearVP(c: string) {
+    clearVP(c: Uint8ClampedArray) {
         const wVP = this.getWidthVP();
         const hVP = this.getHeightVP();
         for (var y = 0; y < hVP; y++) {
@@ -55,7 +55,7 @@ class Viewport {
         return this.fbParent.getPixelFB(this.vp_ul_x + x, this.vp_ul_y + y);
     }
 
-    setPixelVP(x: number, y: number, c: string) {
+    setPixelVP(x: number, y: number, c: Uint8ClampedArray) {
         this.fbParent.setPixelFB(this.vp_ul_x + x, this.vp_ul_y + y, c);
     }
 

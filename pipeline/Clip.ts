@@ -13,7 +13,7 @@ class Clip {
             newVertexList.push(v);
         }
 
-        let newColorList: Array<string> = [];
+        let newColorList: Array<Uint8ClampedArray> = [];
         for (const c of model.colorList) {
             newColorList.push(c);
         }
@@ -239,14 +239,15 @@ class Clip {
         }
 
         // Use the value of t to interpolate the color of the new vertex
-        let cI = hexToRGB(model.colorList[ls.cIndex[inside]]);
-        let cO = hexToRGB(model.colorList[ls.cIndex[1 - inside]]);
+        let cI = model.colorList[ls.cIndex[inside]];
+        let cO = model.colorList[ls.cIndex[1 - inside]];
 
         const r = (1 - t) * cO[0] + t * cI[0];
         const g = (1 - t) * cO[1] + t * cI[1];
         const b = (1 - t) * cO[2] + t * cI[2];
+        const a = (1 - t) * cO[3] + t * cI[3];
 
-        const newColor = rgbToHex(r, g, b);
+        const newColor = new Uint8ClampedArray([r, g, b, a]);
         const cIndex = model.colorList.length;
         model.colorList.push(newColor);
 
@@ -257,9 +258,9 @@ class Clip {
             console.log("- <x_o, y_o> = < " + vOx.toPrecision(24) + " " + vOy.toPrecision(24) + " >\n");
             console.log("- <x_c, y_c> = < " + x.toPrecision(24) + " " + y.toPrecision(24) + " >\n");
 
-            console.log("- <r_i, g_i, b_i> = < " + cI[0].toPrecision(15) + " " + cI[1].toPrecision(15) + " " + cI[2].toPrecision(15) + " >\n");
-            console.log("- <r_o, g_o, b_o> = < " + cO[0].toPrecision(15) + " " + cO[1].toPrecision(15) + " " + cO[2].toPrecision(15) + " >\n");
-            console.log("- <r_c, g_c, b_c> = < " + r.toPrecision(15) + " " + g.toPrecision(15) + " " + b.toPrecision(15) + " >\n");
+            console.log("- <r_i, g_i, b_i, a_i> = < " + cI[0].toPrecision(15) + " " + cI[1].toPrecision(15) + " " + cI[2].toPrecision(15) + " " + cI[3].toPrecision(15) + " >\n");
+            console.log("- <r_o, g_o, b_o, a_o> = < " + cO[0].toPrecision(15) + " " + cO[1].toPrecision(15) + " " + cO[2].toPrecision(15) + " " + cO[3].toPrecision(15) + " >\n");
+            console.log("- <r_c, g_c, b_c, a_c> = < " + r.toPrecision(15) + " " + g.toPrecision(15) + " " + b.toPrecision(15) + " " + a.toPrecision(15) + " >\n");
         }
 
         // Return new line segment using the new vertex and color
