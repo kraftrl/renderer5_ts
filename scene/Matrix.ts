@@ -138,6 +138,7 @@ class Matrix {
     // Multiply a vertex by a matrix and return a new vertex
     timesVertex(v: Vertex) {
         const vec: Vector = this.v1.times(v.x).plus(this.v2.times(v.y).plus(this.v3.times(v.z).plus(this.v4.times(v.w))));
+        console.log(vec);
         return new Vertex(vec.x, vec.y, vec.z, vec.w);
     }
 }
