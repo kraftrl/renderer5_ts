@@ -5,13 +5,30 @@ import { Projection } from './Projection.js';
 import { View2Camera } from './View2Camera.js';
 import { Clip } from './Clip.js';
 
+/**
+   This renderer takes as its input a {@link Scene} data structure
+   and a {@link FrameBuffer.Viewport} within a {@link FrameBuffer}
+   data structure. This renderer mutates the {@link FrameBuffer.Viewport}
+   so that it is filled in with the rendered image of the geometric
+   scene represented by the {@link Scene} object.
+<p>
+   This implements our seventh rendering pipeline. It adds a vertex
+   transformation stage, {@link Model2View}, that converts vertex
+   coordinates from the {@link Model}'s (private) coordinate system
+   to the {@link Camera}'s (shared) view coordinate system. There are
+   five pipeline stages.
+*/
 export class Pipeline {
 
 
     static debug = false;
-	/**
+    /**
+      Mutate the {@link FrameBuffer}'s given {@link FrameBuffer.Viewport}
+      so that it holds the rendered image of the {@link Scene} object.
 
-	*/
+      @param scene  {@link Scene} object to render
+      @param cn     Canvas to hold rendered image of the {@link Scene}
+    */
 	static render(scene, cn) {
 
 		// Render every Model in the Scene.

@@ -1,6 +1,21 @@
 import { Vector } from './Vector.js';
 import { Vertex } from './Vertex.js'
 
+/**
+   A {@code Matrix} object has four {@link Vector} objects.
+<p>
+   The four {@link Vector} objects represent the four column vectors
+   of the 4-by-4 matrix (as in a Linear Algebra course).
+<p>
+   In computer graphics, the points and vectors of 3-dimensional space
+   are represented using 4-dimensional homogeneous coordinates.
+   So each transformation of 3-dimensional space is represented by
+   a 4-by-4 (homogeneous) matrix.
+<p>
+   A 4-by-4 matrix represents a transformation of 3-dimensional space.
+   The most common transformations are translation, rotation, and
+   scaling. A 4-by-4 matrix can also represent a projection transformation.
+*/
 export class Matrix {
     constructor() {
         this.v1 = new Vector(0, 0, 0, 0);
@@ -9,11 +24,21 @@ export class Matrix {
         this.v4 = new Vector(0, 0, 0, 0);    
     }
 
-    static build(v1, v2, v3, v4) {
-        console.log(v1);
-        console.log(v2);
-        console.log(v3);
-        console.log(v4);        
+     /**
+      Construct an arbitrary 4-by-4 {@code Matrix}
+      with the given column {@link Vector}s.
+      <p>
+      Notice that this is a private constructor. Other
+      objects should use the static facory methods to
+      create new {@code Matrix} objects.
+
+      @param v1  1st column {@link Vector} for the new {@code Matrix}
+      @param v2  2nd column {@link Vector} for the new {@code Matrix}
+      @param v3  3rd column {@link Vector} for the new {@code Matrix}
+      @param v4  4th column {@link Vector} for the new {@code Matrix}
+      @return a new {@code Matrix} object
+    */
+    static build(v1, v2, v3, v4) {     
         var m = new Matrix();
         m.v1 = v1;
         m.v2 = v2;
