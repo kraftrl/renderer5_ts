@@ -20,7 +20,6 @@ export class Matrix {
         m.v3 = v3;
         m.v4 = v4;
 
-        console.log("New matrix (build):")
         return m;
     }
 
@@ -36,15 +35,15 @@ export class Matrix {
             new Vector(0.0, 1.0, 0.0, 0.0),
             new Vector(0.0, 0.0, 1.0, 0.0),
             new Vector(  x,   y,   z, 1.0));
-        console.log("Translated matrix:")
-        console.log(b);
+        //console.log("Translated matrix:")
+        //console.log(b);
         return b;
     }
 
     // Uniform scaling matrix
     static scaleConst(d) {
         var newMatrix = Matrix.scale(d, d, d);
-        console.log(newMatrix);
+        //console.log(newMatrix);
         return Matrix.scale(d, d, d);
     }
 
@@ -85,7 +84,7 @@ export class Matrix {
                             new Vector(ux * uy * (1 - c) - (uz * s), uy * uy * (1 - c) + c,        uz * uy * (1 - c) + (ux * s), 0.0),
                             new Vector(ux * uz * (1 - c) + (uy * s), uy * uz * (1 - c) - (ux * s), uz * uz * (1 - c) + c,        0.0),
                             new Vector(0.0,                          0.0,                          0.0,                          1.0));
-        console.log(newMatrix);
+        //console.log(newMatrix);
         return newMatrix;
     }
 
@@ -104,10 +103,12 @@ export class Matrix {
         this.v4 = vec4;
         */
 
+        /*
         console.log("1st matrix:")
         console.log(this);
         console.log("2nd matrix:")
         console.log(m);
+        */
         
         // this.v1 = this * m.v1
         var x = m.v1.x;
@@ -170,8 +171,8 @@ export class Matrix {
         this.v4.z = z4;
         this.v4.w = w4;
 
-        console.log("New matrix:")
-        console.log(this);
+        //console.log("New matrix:")
+        //console.log(this);
 
         return this;
     }

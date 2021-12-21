@@ -8,7 +8,6 @@ export class Rasterize {
     static rasterize(model, ls, cn) {
         var ctx = cn.getContext("2d");
 
-        //console.log(model);
 
         if (ctx != null) {
             // Make local copies of several values.
@@ -48,7 +47,6 @@ export class Rasterize {
             
 		    var grd = ctx.createLinearGradient(x0, y0, x1, y1);
 		    grd.addColorStop(0, c0);
-            //console.log(c1);
 		    grd.addColorStop(1, c1);
 		    ctx.strokeStyle = grd;
 		    ctx.beginPath();

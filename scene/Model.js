@@ -64,12 +64,20 @@ export class Model {
         }
     }
 
+    /**
+        Add color(s) to the color list. Must be in hexadecimal format.
+    */
     addColor() {
         for (var c of arguments) {
             this.colorList.push(c);
         }
     }
 
+    /**
+        Loads a 3D model from a JSON file over AJAX. See /assets/Cube.json to see how the JSON model is formatted.
+
+        @param fileName  the path of the file to load the 3D model from
+    */
     static loadFromJSON(fileName) {
         var xhttp = new XMLHttpRequest();
         var data = {};
@@ -96,43 +104,6 @@ export class Model {
 
         return new Model(data.name, newVertexList, newLineSegmentList);
 
-    }
-
-    static loadFromObj(fileName, name) {
-        var xhttp = new XMLHtppRequest();
-        var data;
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                data = xhttp.responseText;
-            }
-        };
-        xhttp.open("GET", fileName, false);
-        xhttp.send();
-
-        var newVertexList = [];
-        var newLineSegmentList = [];
-
-        var vertexMatches = data.match(/^v( -?\d+(\.\d+)?){3}$/gm);
-        for (var v of vertexMatches) {
-            var vertexSplit = v.split(" ");
-            newVertexList.push(new Vertex(vertexSplit[1], vertexSplit[2], vertexSplit[3]));
-        }
-
-        var polygonMatches = data.match(/^f( -?\d+(\.\d+)?){3}$/gm);
-        for (var p of polygonMatches) {
-            var polySplit = p.split(" ");
-            newLineSegmentList.push(new LineSegment(polySplit[1], polySplit[2]));
-            newLineSegmentList.push(new LineSegment(polySplit[2], polySplit[3]));
-            newLineSegmentList.push(new LineSegment(polySplit[1], polySplit[3]));
-        }
-
-        return new Model("Obj", newVertexList, newLineSegmentList);
-    }
-
-    static parseObj(data, name) {
-        var newVertexList = [];
-        var newLineSegmentList = [];
-        
     }
 
 }
