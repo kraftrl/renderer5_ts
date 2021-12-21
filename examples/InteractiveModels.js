@@ -49,7 +49,7 @@ export class InteractiveModels extends InteractiveAbstractClient {
         this.modelArray.push(new ObjSimpleModel("../assets/teapot.obj"));
         this.modelArray.push(new ObjSimpleModel("../assets/cessna.obj"));
         this.modelArray.push( new Sphere(1.0, 30, 30) );
-        //this.modelArray.add( new Cylinder(0.5, 1.0, 20, 20) );
+        this.modelArray.add( new Cylinder(0.5, 1.0, 20, 20) );
         this.modelArray.add( new Torus(0.75, 0.25, 25, 25) );
         this.modelArray.push( new Cube2(15, 15, 15) );
         var floor = new PanelXZ(-7, 7, 3, -1); // floor
@@ -90,7 +90,7 @@ export class InteractiveModels extends InteractiveAbstractClient {
 
     setTransformations(c) {
         if ('=' == c) {
-            
+            // Do nothing as I can't get the matrix multiplication done right
         }
         else if ('s' == c) { // Scale the model 10% smaller.
             this.scene.getPosition(0).matrix.mult(Matrix.scaleConst(1 / 1.1));
