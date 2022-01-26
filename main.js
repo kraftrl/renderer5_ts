@@ -38,6 +38,8 @@ import { Rasterize } from './pipeline/Rasterize.js';
 import { View2Camera } from './pipeline/View2Camera.js';
 import { Model2View } from './pipeline/Model2View.js';
 
+// import { FrameBuffer } from './framebuffer/FrameBuffer.js';
+
 const scene = new Scene();
 
 scene.camera.projPerspectiveReset();
@@ -46,10 +48,10 @@ console.log(scene.camera.normalizeMatrix);
 //scene.addPosition( [new Position(new   Cube())] );
 //scene.addPosition( [new Position(Model.loadFromJSON("models/Cube.json"))])
 //scene.addPosition([new Position(new Ring(1.0, 0.33, 1, 3))]);
-scene.addPosition([new Position(new Pyramid(2.0, 1.0, 15, 4, true))]);
-scene.addPosition([new Position(new Pyramid())]);
-scene.addPosition([new Position(new ObjSimpleModel("assets/cessna.obj"))]);
-scene.addPosition([new Position(new GRSModel("assets/grs/bronto.grs"))]);
+scene.addPosition( [new Position(new Pyramid(2.0, 1.0, 15, 4, true))]);
+scene.addPosition( [new Position(new Pyramid())]);
+scene.addPosition( [new Position(new ObjSimpleModel("assets/cessna.obj"))]);
+scene.addPosition( [new Position(new GRSModel("assets/grs/bronto.grs"))]);
 scene.addPosition( [new Position(new  Cube2())] );
 scene.addPosition( [new Position(new Circle())] );
 scene.addPosition( [new Position(new CylinderSector())] );
