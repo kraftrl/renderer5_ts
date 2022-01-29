@@ -7,10 +7,10 @@ export class Clip {
     static clip(model) {
         var newLineSegmentList = [];
         
-        var model2 = new Model(model.name, model.vertexList.slice(), model.lineSegmentList, model.colorList, model.visible, model.debug);
+        const model2 = new Model(model.name, model.vertexList.slice(), model.lineSegmentList, model.colorList.slice(), model.visible, model.debug);
 
-        for (var ls of model2.lineSegmentList) {
-            var ls_clipped = Clip.clipLS(model2, ls);
+        for (const ls of model2.lineSegmentList) {
+            const ls_clipped = Clip.clipLS(model2, ls);
             if (ls_clipped != null) {
                 newLineSegmentList.push(ls_clipped);
             }
@@ -21,11 +21,11 @@ export class Clip {
 
 
     static clipLS(model, ls) {
-        var v0 = model.vertexList[ls.vIndex[0]];
-        var v1 = model.vertexList[ls.vIndex[1]];
+        const v0 = model.vertexList[ls.vIndex[0]];
+        const v1 = model.vertexList[ls.vIndex[1]];
 
-        var x0 = v0.x,  y0 = v0.y;
-        var x1 = v1.x,  y1 = v1.y;
+        const x0 = v0.x,  y0 = v0.y;
+        const x1 = v1.x,  y1 = v1.y;
 
         // 1. Check for trivial accept
         if (!(Math.abs(x0) > 1 || Math.abs(x1) > 1 || Math.abs(y0) > 1 || Math.abs(y1) > 1)) {

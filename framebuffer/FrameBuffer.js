@@ -1,3 +1,4 @@
+import { Color } from '../color/Color.js';
 import { Viewport } from './Viewport.js';
 
 /**
@@ -18,11 +19,11 @@ import { Viewport } from './Viewport.js';
 */
 export class FrameBuffer
 {
-    static width;  // framebuffer's width
-    static height; // framebuffer's height
-    static pixel_buffer = []; // contains each pixel's color data for a rendered frame
-    static bgColorFB = '#000000';        // default background color
-    static vp =  new Viewport(this);             // default viewport
+    width;  // framebuffer's width
+    height; // framebuffer's height
+    pixel_buffer = []; // contains each pixel's color data for a rendered frame
+    bgColorFB = Color.Black;        // default background color
+    vp;          // default viewport
 
     /**
         Construct a {@link FrameBuffer} with the given dimensions.
@@ -40,19 +41,21 @@ export class FrameBuffer
       if (source instanceof FrameBuffer) {
          this.width  = source.getWidthFB();
          this.height = source.getHeightFB();
+         this.bgColorFB = source.bgColorFB;
 
          // Create the pixel buffer.
-         this.pixel_buffer = new Array(width * height);
+         this.pixel_buffer = new Array(this.width * this.height);
 
          // Read pixel data, one pixel at a time, from the source FrameBuffer.
-         for (var y = 0; y < height; ++y) {
-            for (var x = 0; x < width; ++x) {
+         for (var y = 0; y < this.height; ++y) {
+            for (var x = 0; x < this.width; ++x) {
                this.setPixelFB(x, y, source.getPixelFB(x,y));
             }
          }
       } else if (source instanceof Viewport) {
          this.width  = source.getWidthVP();
          this.height = source.getHeightVP();
+         this.bgColorFB = source.bgColorVP;
    
          // Create the pixel buffer.
          this.pixel_buffer = new Array(this.width * this.height);
@@ -63,16 +66,16 @@ export class FrameBuffer
                this.setPixelFB(x, y, source.getPixelVP(x,y));
             }
          }
-      } else if (source === undefined){
-         this.width  = w;
-         this.height = h;
+      } else {
+         this.width  = w ?? 0;
+         this.height = h ?? 0;
 
          // Create the pixel buffer
          this.pixel_buffer = new Array(this.width * this.height);
 
          // Initialize the pixel buffer.
-         this.bgColorFB = c ?? '#000000';
-         this.clearFB(c);
+         this.bgColorFB = c ?? Color.Black;
+         this.clearFB(this.bgColorFB);
       }
 
         // Create the default viewport.
@@ -84,7 +87,7 @@ export class FrameBuffer
 
       @return width of this {@code FrameBuffer}
    */
-   static getWidthFB() {
+   getWidthFB() {
       return this.width;
    }
 
@@ -93,7 +96,7 @@ export class FrameBuffer
 
       @return height of this {@code FrameBuffer}
    */
-   static getHeightFB() {
+   getHeightFB() {
       return this.height;
    }
 
@@ -102,7 +105,7 @@ export class FrameBuffer
 
       @return this {@code FrameBuffer}'s default {@code Viewport}
    */
-   static getViewport() {
+   getViewport() {
       return this.vp;
    }
 
@@ -115,7 +118,7 @@ export class FrameBuffer
       @param width    default {@code Viewport}'s width
       @param height   default {@code Viewport}'s height
    */
-    static setViewport(vp_ul_x, vp_ul_y, width, height) {
+   setViewport(vp_ul_x, vp_ul_y, width, height) {
       this.vp.setViewport(vp_ul_x ?? 0, vp_ul_y ?? 0, width ?? this.width, height ?? this.height);
    }
 
@@ -124,7 +127,7 @@ export class FrameBuffer
 
       @return the {@code FrameBuffer}'s background {@link Color}
    */
-   static getBackgroundColorFB() {
+   getBackgroundColorFB() {
       return this.bgColorFB;
    }
 
@@ -139,15 +142,8 @@ export class FrameBuffer
 
       @param c  {@code FrameBuffer}'s new background color
    */
-   static setBackgroundColorFB(c) {
+   setBackgroundColorFB(c) {
       this.bgColorFB = c;
-   }
-
-   /**
-      Clear the {@code FrameBuffer} using its background color.
-   */
-   static clearFB() {
-      this.clearFB(this.bgColorFB);
    }
 
    /**
@@ -155,10 +151,10 @@ export class FrameBuffer
 
       @param c  {@link Color} to clear {@code FrameBuffer} with
    */
-   static clearFB(c) {
+   clearFB(c) {
       for (var y = 0; y < this.height; ++y) {
          for (var x = 0; x < this.width; ++x) {
-            this.setPixelFB(x, y, c);
+            this.setPixelFB(x, y, c ?? this.bgColorFB);
          }
       }
    }
@@ -171,14 +167,14 @@ export class FrameBuffer
       @param y  vertical coordinate within the {@link FrameBuffer}
       @return the color of the pixel at the given pixel coordinates
    */
-   static getPixelFB(x, y) {
-      const index = (y*width + x);
+   getPixelFB(x, y) {
+      const index = (y*this.width + x);
       try {
          return this.pixel_buffer[index];
       }
       catch(e) {
          console.log(`FrameBuffer: Bad pixel coordinate (${x},${y})`);
-         return '#000000';
+         return Color.Black;
       }
    }
 
@@ -190,8 +186,8 @@ export class FrameBuffer
       @param y  vertical coordinate within the {@link FrameBuffer}
       @param c  color for the pixel at the given pixel coordinates
    */
-   static setPixelFB(x, y, c) {
-      const index = (y*width + x);
+   setPixelFB(x, y, c) {
+      const index = (y*this.width + x);
       try {
          this.pixel_buffer[index] = c;
       }
@@ -206,14 +202,14 @@ export class FrameBuffer
 
       @return {@link FrameBuffer} object holding just red pixel data from this {@link FrameBuffer}
    */
-   static convertRed2FB() {
+   convertRed2FB() {
       const red_fb = new FrameBuffer(this.width, this.height);
       red_fb.bgColorFB = this.bgColorFB;
 
       // Copy the framebuffer's red values into the new framebuffer's pixel buffer.
       for (var y = 0; y < this.height; ++y) {
          for (var x = 0; x < this.width; ++x) {
-            const c = `#${this.bgColorFB.substring(0,2)}0000`;
+            const c = new Color([this.bgColorFB.r, 0, 0]);
             red_fb.setPixelFB(x, y, c);
          }
       }
@@ -226,14 +222,14 @@ export class FrameBuffer
 
       @return {@code FrameBuffer} object holding just green pixel data from this {@code FrameBuffer}
    */
-   static convertGreen2FB() {
+   convertGreen2FB() {
       const green_fb = new FrameBuffer(this.width, this.height);
       green_fb.bgColorFB = this.bgColorFB;
 
       // Copy the framebuffer's green values into the new framebuffer's pixel buffer.
       for (var y = 0; y < this.height; ++y) {
          for (var x = 0; x < this.width; ++x) {
-            const c = `#00${this.bgColorFB.substring(2,4)}00`;
+            const c = new Color([0, this.bgColorFB.g, 0]);
             green_fb.setPixelFB(x, y, c);
          }
       }
@@ -246,14 +242,14 @@ export class FrameBuffer
 
       @return {@code FrameBuffer} object holding just blue pixel data from this {@code FrameBuffer}
    */
-   static convertBlue2FB() {
+   convertBlue2FB() {
       const blue_fb = new FrameBuffer(this.width, this.height);
       blue_fb.bgColorFB = this.bgColorFB;
 
       // Copy the framebuffer's blue values into the new framebuffer's pixel buffer.
       for (var y = 0; y < this.height; ++y) {
          for (var x = 0; x < this.width; ++x) {
-            const c = `#0000${this.bgColorFB.substring(0,2)}`;
+            const c = new Color([0, 0, this.bgColorFB.b]);
             blue_fb.setPixelFB(x, y, c);
          }
       }
@@ -265,16 +261,18 @@ export class FrameBuffer
 
       @return a string representation of this {@code FrameBuffer}
    */
-   static toString() {
-      var result = `FrameBuffer [w="${width}, h=${height}]\n`;
-      for (var j = 0; j < width; ++j) {
+   toString() {
+      var result = `FrameBuffer [w="${this.width}, h=${this.height}]\n`;
+      for (var j = 0; j < this.width; ++j) {
          result += " r   g   b |";
       }
       result += "\n";
-      for (var i = 0; i < height; ++i) {
-         for (var j = 0; j < width; ++j) {
-            const c = pixel_buffer[(i*width) + j];
-            result += `#${c.substring(0,2)} ${c.substring(2,4)} ${c.substring(4,6)}`;
+      for (var i = 0; i < this.height; ++i) {
+         for (var j = 0; j < this.width; ++j) {
+            const c = this.pixel_buffer[(i*this.width) + j];
+            if (c) {
+               result += c.r + c.g + c.b;
+            }
          }
          result += "\n";
       }

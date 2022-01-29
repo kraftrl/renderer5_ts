@@ -1,5 +1,10 @@
+import { Color } from "./color/Color";
+import { FrameBuffer } from "./framebuffer/FrameBuffer";
+import { ModelShading } from "./scene/ModelShading";
 
 const scene = new Scene();
+const framebuffer = new FrameBuffer(undefined,window.innerWidth,window.innerHeight,undefined);
+
 //scene.camera.projPerspective();
 scene.camera.projPerspectiveReset();
 
@@ -9,7 +14,7 @@ scene.addPosition( [new Position(new Circle())] );
 scene.addPosition( [new Position(new CylinderSector())] );
 
 for (const p of scene.positionList) {
-	ModelShading.setColor(p.model, "#0000FF");
+	ModelShading.setColor(p.model, Color.Blue);
 	p.model.visible = false;
 	for(const vertex of p.model.vertexList) {
 		vertex.z -= 3.0;
@@ -17,7 +22,7 @@ for (const p of scene.positionList) {
 }
 
 const axes = new Axes2D(-10,10,-10,10,-8,11,11);
-ModelShading.setColor(axes, "#FF0000");
+ModelShading.setColor(axes, Color.Red);
 scene.addPosition( [new Position(axes)] );
 for(const vertex of axes.vertexList) {
 	vertex.z -= 1.0;
@@ -40,6 +45,7 @@ if (ctx != null) {
 	//ctx.fillStyle = "black";
 	//ctx.fillRect(0, 0, cn.width, cn.height);
 	Pipeline.render(scene, cn);
+	display(ctx);
 }
 else {
 	console.log("cn.getContext(2d) is null");
@@ -200,6 +206,24 @@ function keyPressed(event: { key: string }) {
 	else {
 		console.log("cn.getContext(2d) is null");
 	}
+}
+
+function display(ctx:CanvasRenderingContext2D){
+	var vpWidth = framebuffer.vp.getWidthVP();
+	var vpHeight = framebuffer.vp.getHeightVP();
+	var imgData = ctx.createImageData(vpWidth,vpHeight);
+	var k = 0;
+	for (var i = vpHeight - 1; i > 0; --i) {
+	   for (var j = 0; j < vpWidth; ++j) {
+		  const c = framebuffer.pixel_buffer[(i*vpWidth) + j];
+		  imgData.data[k+0] = c.r;
+		  imgData.data[k+1] = c.g;
+		  imgData.data[k+2] = c.b;
+		  imgData.data[k+3] = 255;
+		  k += 4;
+	   }
+	}
+	ctx.putImageData(imgData, framebuffer.vp.vp_ul_x, framebuffer.vp.vp_ul_y);
 }
 
 

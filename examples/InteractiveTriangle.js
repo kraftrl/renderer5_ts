@@ -13,6 +13,7 @@ import { PerspectiveNormalizeMatrix } from './../scene/PerspectiveNormalizeMatri
 import { Pipeline } from './../pipeline/Pipeline.js';
 
 import { InteractiveAbstractClient } from './InteractiveAbstractClient.js';
+import { Color } from '../color/Color.js';
 
 export class InteractiveTriangle extends InteractiveAbstractClient {
     constructor() {
@@ -38,7 +39,7 @@ export class InteractiveTriangle extends InteractiveAbstractClient {
         model.addVertex([v2]);
 
         // Create a different color for each vertex.
-        model.addColor("#FF0000", "#00FF00", "#0000FF");
+        model.addColor(Color.Red, Color.Green, Color.Blue);
         
         // Add the geometry with colors to the Model.
         model.addLineSegment([new LineSegment(0, 1, 0, 1),

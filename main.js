@@ -38,17 +38,19 @@ import { Rasterize } from './pipeline/Rasterize.js';
 import { View2Camera } from './pipeline/View2Camera.js';
 import { Model2View } from './pipeline/Model2View.js';
 
-// import { FrameBuffer } from './framebuffer/FrameBuffer.js';
+import { FrameBuffer } from './framebuffer/FrameBuffer.js';
+import { Viewport } from './framebuffer/Viewport.js';
+import { Color } from './color/Color.js';
 
 const scene = new Scene();
 
 scene.camera.projPerspectiveReset();
 console.log(scene.camera.normalizeMatrix);
 
-//scene.addPosition( [new Position(new   Cube())] );
-//scene.addPosition( [new Position(Model.loadFromJSON("models/Cube.json"))])
-//scene.addPosition([new Position(new Ring(1.0, 0.33, 1, 3))]);
-scene.addPosition( [new Position(new Pyramid(2.0, 1.0, 15, 4, true))]);
+// scene.addPosition( [new Position(new   Cube())] );
+// scene.addPosition( [new Position(Model.loadFromJSON("models/Cube.json"))])
+// scene.addPosition( [new Position(new Ring(1.0, 0.33, 1, 3))]);
+scene.addPosition( [new Position(new Pyramid(2.0, 1.0, 15, 4, false))]);
 scene.addPosition( [new Position(new Pyramid())]);
 scene.addPosition( [new Position(new ObjSimpleModel("assets/cessna.obj"))]);
 scene.addPosition( [new Position(new GRSModel("assets/grs/bronto.grs"))]);
@@ -58,7 +60,7 @@ scene.addPosition( [new Position(new CylinderSector())] );
 
 for (var p of scene.positionList) {
     console.log(p);
-	ModelShading.setColor(p.model, "#0000FF");
+	ModelShading.setColor(p.model, Color.Blue);
 	p.model.visible = false;
 	for(const vertex of p.model.vertexList) {
 		vertex.z = 3.0;
@@ -66,7 +68,7 @@ for (var p of scene.positionList) {
 }
 
 const axes = new Axes2D(-10,10,-10,10,-8,11,11);
-ModelShading.setColor(axes, "#FF0000");
+ModelShading.setColor(axes, Color.Red);
 scene.addPosition( [new Position(axes)] );
 for(var vertex of axes.vertexList) {
 	vertex.z -= 1.0;
@@ -74,7 +76,7 @@ for(var vertex of axes.vertexList) {
 
 
 // currentModel will cycle through all but
-// the last mode, the axes
+// the last model, the axes
 var currentPosition = 0;
 scene.positionList[currentPosition].model.visible = true;
 
@@ -83,18 +85,7 @@ print_help_message();
 
 const cn = document.getElementById("pixels");
 const ctx = cn.getContext("2d");
-if (ctx != null) {
-    ctx.imageSmoothingEnabled = false;
-	ctx.canvas.width = window.innerWidth;
-	ctx.canvas.height = window.innerHeight;
-	ctx.clearRect(0, 0, cn.width, cn.height);
-	ctx.fillStyle = "black";
-	ctx.fillRect(0, 0, cn.width, cn.height);
-	Pipeline.render(scene, cn);
-}
-else {
-	console.log("cn.getContext(2d) is null");
-}
+display();
 
 document.addEventListener('keypress', keyPressed);
 
@@ -238,19 +229,37 @@ function keyPressed(event) {
 		scene.positionList[currentPosition].model.visible = true;
 	}
 
+	// add image data
+	display();
+}
+
+function display(){
 	const cn = document.getElementById("pixels");
 	const ctx = cn.getContext("2d");
-	if (ctx != null) {
-		ctx.canvas.width = window.innerWidth;
-		ctx.canvas.height = window.innerHeight;
-		ctx.clearRect(0, 0, cn.width, cn.height);
-		ctx.fillStyle = "black";
-		ctx.fillRect(0, 0, cn.width, cn.height);
-		Pipeline.render(scene, cn);
-	}
-	else {
+	if (ctx == null) {
 		console.log("cn.getContext(2d) is null");
+		return;
 	}
+	const fb = new FrameBuffer(undefined,window.innerWidth,window.innerHeight);
+	ctx.canvas.width = window.innerWidth;
+	ctx.canvas.height = window.innerHeight;
+	Pipeline.render(scene, cn, fb.vp);
+
+	// probably should just store this imageData in Framebuffer
+	const imgData = ctx.createImageData(fb.width,fb.height);
+	console.log(fb);
+	var k = 0;
+	for (var i = fb.height - 1; i > 0; --i) {
+	   for (var j = 0; j < fb.width; ++j) {
+		  const c = fb.pixel_buffer[(i*fb.width) + j];
+		  imgData.data[k+0] = c.r;
+		  imgData.data[k+1] = c.g;
+		  imgData.data[k+2] = c.b;
+		  imgData.data[k+3] = 255;
+		  k += 4;
+	   }
+	}
+	ctx.putImageData(imgData, fb.vp.vp_ul_x, fb.vp.vp_ul_y);
 }
 
 function print_help_message()
@@ -294,3 +303,5 @@ function updateNormalizeMatrix(camera) {
 		camera.normalizeMatrix = newNormalizeMatrix;
 	}
 }
+
+window.onresize = display;

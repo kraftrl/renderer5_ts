@@ -1,3 +1,5 @@
+import { FrameBuffer } from "./FrameBuffer.js";
+
 /**
      A {@code Viewport} is a two-dimensional sub array of its
     "parent" {@link FrameBuffer}. A {@code Viewport} is
@@ -14,17 +16,15 @@
     positive {@code y} direction is downward.
 */
 
-import { FrameBuffer } from "./FrameBuffer";
-
 export class Viewport
 {
     // Coordinates of the viewport within the framebuffer.
-    static vp_ul_x;     // upper-left-hand corner
-    static vp_ul_y;
-    static vp_lr_x;     // lower-right-hand corner
-    static vp_lr_y;
-    static bgColorVP; // the viewport's background color
-    static parent;
+    vp_ul_x;     // upper-left-hand corner
+    vp_ul_y;
+    vp_lr_x;     // lower-right-hand corner
+    vp_lr_y;
+    bgColorVP; // the viewport's background color
+    parent;
 
     /**
      Create a {@code Viewport} with the given upper-left-hand corner,
@@ -67,9 +67,9 @@ export class Viewport
                     this.setPixelVP(x, y, source.getPixelVP(x,y));
                 }
             }
-        } else if (source === undefined){
+        } else {
             this.setViewport(vp_ul_x ?? 0, vp_ul_y ?? 0, width ?? parent.width, height ?? parent.height);
-            this.bgColorVP = c ?? bgColorFB;
+            this.bgColorVP = c ?? parent.bgColorFB;
         }
 
         this.parent = parent;
@@ -88,7 +88,7 @@ export class Viewport
         @param width    {@code Viewport}'s new width
         @param height   {@code Viewport}'s new height
     */
-    static setViewport(vp_ul_x, vp_ul_y, width, height) {
+    setViewport(vp_ul_x, vp_ul_y, width, height) {
         this.vp_ul_x = vp_ul_x;
         this.vp_ul_y = vp_ul_y;
         this.vp_lr_x = vp_ul_x + width - 1;
@@ -100,7 +100,7 @@ export class Viewport
 
         @return width of this {@code Viewport} rectangle
     */
-    static getWidthVP() {
+    getWidthVP() {
         return this.vp_lr_x - this.vp_ul_x + 1;
     }
 
@@ -109,7 +109,7 @@ export class Viewport
 
         @return height of this {@code Viewport} rectangle
     */
-    static getHeightVP() {
+    getHeightVP() {
         return this.vp_lr_y - this.vp_ul_y + 1;
     }
 
@@ -118,7 +118,7 @@ export class Viewport
 
         @return the {@code Viewport}'s background {@link Color}
     */
-    static getBackgroundColorVP() {
+    getBackgroundColorVP() {
         return this.bgColorVP;
     }
 
@@ -133,29 +133,21 @@ export class Viewport
 
         @param c  {@code Viewport}'s new background {@link Color}
     */
-    static setBackgroundColorVP(c) {
+    setBackgroundColorVP(c) {
         this.bgColorVP = c;
     }
-
-    /**
-     Clear this {@code Viewport} using its background color.
-    */
-    static clearVP() {
-        this.clearVP(this.bgColorVP);
-    }
-
 
     /**
      Clear this {@code Viewport} using the given {@link Color}.
 
         @param c  {@link Color} to clear this {@code Viewport} with
     */
-    static clearVP(c) {
+    clearVP(c) {
         const wVP = this.getWidthVP();
         const hVP = this.getHeightVP();
         for (var y = 0; y < hVP; ++y) {
             for (var x = 0; x < wVP; ++x) {
-                this.setPixelVP(x, y, c);
+                this.setPixelVP(x, y, c ?? this.bgColorVP);
             }
         }
     }
@@ -168,7 +160,7 @@ export class Viewport
         @param y  vertical coordinate within this {@code Viewport}
         @return the {@link Color} of the current pixel at the given {@code Viewport} coordinates
     */
-    static getPixelVP(x, y) {
+    getPixelVP(x, y) {
         return this.parent.getPixelFB(this.vp_ul_x + x, this.vp_ul_y + y);
     }
 
@@ -181,8 +173,8 @@ export class Viewport
         @param y  vertical coordinate within this {@code Viewport}
         @param c  {@link Color} for the pixel at the given {@code Viewport} coordinates
     */
-    static setPixelVP(x, y, c) {
-        setPixelFB(this.vp_ul_x + x, this.vp_ul_y + y, c);
+    setPixelVP(x, y, c) {
+        this.parent.setPixelFB(this.vp_ul_x + x, this.vp_ul_y + y, c);
     }
 
     /**
@@ -191,7 +183,7 @@ export class Viewport
 
         @return {@code FrameBuffer} object holding pixel data from this {@code Viewport}
     */
-    static convertVP2FB() {
+    convertVP2FB() {
         const wVP = this.getWidthVP();
         const hVP = this.getHeightVP();
 

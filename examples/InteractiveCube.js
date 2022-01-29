@@ -13,6 +13,7 @@ import { PerspectiveNormalizeMatrix } from './../scene/PerspectiveNormalizeMatri
 import { Pipeline } from './../pipeline/Pipeline.js';
 
 import { InteractiveAbstractClient } from './InteractiveAbstractClient.js';
+import { Color } from '../color/Color.js';
 
 class InteractiveCube extends InteractiveAbstractClient {
 
@@ -50,9 +51,9 @@ class InteractiveCube extends InteractiveAbstractClient {
         // Create three colors, one color for the top edges,
         // one color for the bottom edges, and
         // one color for the vertical edges.
-        //model.addColor("#FF0000", "#00FF00", "#0000FF");
+        //model.addColor(Color.Red, Color.Green, Color.Blue);
 
-        ModelShading.setColor(model, "#0000FF");
+        ModelShading.setColor(model, Color.Blue);
 
         // Add the geometry with colors to the model
         model.addLineSegment([new LineSegment(0, 1),  // bottom face

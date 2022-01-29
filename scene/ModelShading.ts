@@ -1,16 +1,14 @@
-/*
-
-*/
+import { Color } from "../color/Color";
 
 /**
 
 */
-class ModelShading {
+export class ModelShading {
 
 	/**
 
 	*/
-	static setColor(model:Model, c:string) {
+	static setColor(model:Model, c:Color) {
 		if(model.colorList.length == 0) {
 			for(const v of model.vertexList) {
 				model.colorList.push(c);
@@ -100,6 +98,6 @@ class ModelShading {
 		for (let h = 0; h < 6; ++h) {
 			color += letters[Math.floor(Math.random() * 16)];
 		}
-		return color;
+		return new Color(color);
 	}
 }

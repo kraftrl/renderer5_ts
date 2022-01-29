@@ -1,16 +1,14 @@
-/*
-
-*/
+import { Color } from "../color/Color";
 
 /**
 
 */
-class Model {
+export class Model {
 
 	name: string;
 	vertexList: Array<Vertex>;
 	lineSegmentList: Array<LineSegment>;
-	colorList: Array<string>;
+	colorList: Array<Color>;
 	visible: boolean;
 	debug: boolean;
 	/**
@@ -19,7 +17,7 @@ class Model {
 	constructor(name: string = "",
 				vertexList: Array<Vertex> = [],
 				lineSegmentList: Array<LineSegment> = [],
-				colorList: Array<string> = [],
+				colorList: Array<Color> = [],
 				visible: boolean = true,
 				debug: boolean = false)
 	{

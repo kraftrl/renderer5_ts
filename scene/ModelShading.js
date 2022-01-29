@@ -1,4 +1,5 @@
-import { Matrix } from './Matrix.js'
+import { Matrix } from './Matrix.js';
+import { Color } from '../color/Color.js';
 
 export class ModelShading {
 
@@ -20,7 +21,7 @@ export class ModelShading {
         ModelShading.setColor(model, ModelShading.randomColor());
     }
 
-    static setRandomVertexColor(model) {
+    static setRandomVertexColors(model) {
         model.colorList = [];
         
         for (var v of model.vertexList) {
@@ -73,7 +74,7 @@ export class ModelShading {
 		for (var h = 0; h < 6; ++h) {
 			color += letters[Math.floor(Math.random() * 16)];
 		}
-		return color;
+		return new Color(color);
 	}
 
 }

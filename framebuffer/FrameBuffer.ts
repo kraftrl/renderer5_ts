@@ -1,4 +1,5 @@
-import { Viewport } from "./Viewport";
+import { Color } from "../color/Color.js";
+import { Viewport } from "../framebuffer/Viewport.js";
 
 /*
 
@@ -8,13 +9,13 @@ export class FrameBuffer
    width : number;      // framebuffer's width
    height: number;      // framebuffer's height
    pixel_buffer;   // contains each pixel's color data for a rendered frame
-   bgColorFB : string;  // default background color
+   bgColorFB : Color;  // default background color
    vp : Viewport;       // default viewport
 
    /**
    
    */
-   constructor(source:FrameBuffer|Viewport|undefined, w:number, h:number, c:string|undefined) {
+   constructor(source:FrameBuffer|Viewport|undefined, w:number, h:number, c:Color|undefined) {
       if (source instanceof FrameBuffer) {
          this.width  = source.getWidthFB();
          this.height = source.getHeightFB();
@@ -50,7 +51,7 @@ export class FrameBuffer
       }
 
       // Initialize the pixel buffer.
-      this.bgColorFB = c ?? '#000000';
+      this.bgColorFB = c ?? Color.Black;
       this.clearFB(c);
 
       // Create the default viewport.
@@ -81,7 +82,7 @@ export class FrameBuffer
    /**
    
    */
-      setViewport(vp_ul_x:number, vp_ul_y:number, width:number, height:number) {
+   setViewport(vp_ul_x:number, vp_ul_y:number, width:number, height:number) {
       this.vp.setViewport(vp_ul_x ?? 0, vp_ul_y ?? 0, width ?? this.width, height ?? this.height);
    }
 
@@ -95,15 +96,15 @@ export class FrameBuffer
    /**
     
    */
-   setBackgroundColorFB(c:string) {
+   setBackgroundColorFB(c:Color) {
       this.bgColorFB = c;
    }
 
    /**
    
    */
-   clearFB(c:string|undefined) {
-      if (c === undefined) c = this.bgColorFB;
+   clearFB(c:Color|undefined) {
+      if (c == undefined) c = this.bgColorFB;
       for (var y = 0; y < this.height; ++y) {
          for (var x = 0; x < this.width; ++x) {
             this.setPixelFB(x, y, c);
@@ -121,14 +122,14 @@ export class FrameBuffer
       }
       catch(e) {
          console.log(`FrameBuffer: Bad pixel coordinate (${x},${y})`);
-         return '#000000';
+         return Color.Black;
       }
    }
 
    /**
    
    */
-   setPixelFB(x:number, y:number, c:string) {
+   setPixelFB(x:number, y:number, c:Color) {
       const index = (y*this.width + x);
       try {
          this.pixel_buffer[index] = c;
@@ -148,7 +149,7 @@ export class FrameBuffer
       // Copy the framebuffer's red values into the new framebuffer's pixel buffer.
       for (var y = 0; y < this.height; ++y) {
          for (var x = 0; x < this.width; ++x) {
-            const c = `#${this.bgColorFB.substring(0,2)}0000`;
+            const c = new Color([this.bgColorFB.r, 0, 0]);
             red_fb.setPixelFB(x, y, c);
          }
       }
@@ -165,7 +166,7 @@ export class FrameBuffer
       // Copy the framebuffer's green values into the new framebuffer's pixel buffer.
       for (var y = 0; y < this.height; ++y) {
          for (var x = 0; x < this.width; ++x) {
-            const c = `#00${this.bgColorFB.substring(2,4)}00`;
+            const c = new Color([0, this.bgColorFB.g, 0]);
             green_fb.setPixelFB(x, y, c);
          }
       }
@@ -182,7 +183,7 @@ export class FrameBuffer
       // Copy the framebuffer's blue values into the new framebuffer's pixel buffer.
       for (var y = 0; y < this.height; ++y) {
          for (var x = 0; x < this.width; ++x) {
-            const c = `#0000${this.bgColorFB.substring(0,2)}`;
+            const c = new Color([0, 0, this.bgColorFB.b]);
             blue_fb.setPixelFB(x, y, c);
          }
       }
@@ -201,7 +202,7 @@ export class FrameBuffer
       for (var i = 0; i < this.height; ++i) {
          for (var j = 0; j < this.width; ++j) {
             const c = this.pixel_buffer[(i*this.width) + j];
-            result += `#${c.substring(0,2)} ${c.substring(2,4)} ${c.substring(4,6)}`;
+            result += c.r + c.g + c.b;
          }
          result += "\n";
       }

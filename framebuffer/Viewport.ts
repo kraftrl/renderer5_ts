@@ -2,7 +2,7 @@
 
 */
 
-import { FrameBuffer } from "./FrameBuffer";
+import { FrameBuffer } from "./FrameBuffer.js";
 
 export class Viewport
 {
@@ -88,7 +88,7 @@ export class Viewport
     
     */
     clearVP(c:string|undefined) {
-        if (c === undefined) c = this.bgColorVP;
+        if (c == undefined) c = this.bgColorVP;
         const wVP = this.getWidthVP();
         const hVP = this.getHeightVP();
         for (var y = 0; y < hVP; ++y) {

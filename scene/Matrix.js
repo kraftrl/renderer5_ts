@@ -69,7 +69,7 @@ export class Matrix {
     static scaleConst(d) {
         var newMatrix = Matrix.scale(d, d, d);
         //console.log(newMatrix);
-        return Matrix.scale(d, d, d);
+        return newMatrix;
     }
 
     // Construct a diagonal matrix that scales in the x, y, and z directions by the given factors
