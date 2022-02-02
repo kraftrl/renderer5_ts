@@ -2,6 +2,7 @@
 
 */
 
+import { Color } from "../color/Color.js";
 import { FrameBuffer } from "./FrameBuffer.js";
 
 export class Viewport
@@ -11,7 +12,7 @@ export class Viewport
     vp_ul_y!: number;
     vp_lr_x!: number;     // lower-right-hand corner
     vp_lr_y!: number;
-    bgColorVP: string; // the viewport's background color
+    bgColorVP: Uint8ClampedArray; // the viewport's background color
     parent : FrameBuffer;
 
     /**
@@ -80,14 +81,14 @@ export class Viewport
     /**
     
     */
-    setBackgroundColorVP(c:string) {
+    setBackgroundColorVP(c:Uint8ClampedArray) {
         this.bgColorVP = c;
     }
 
     /**
     
     */
-    clearVP(c:string|undefined) {
+    clearVP(c:Uint8ClampedArray|undefined) {
         if (c == undefined) c = this.bgColorVP;
         const wVP = this.getWidthVP();
         const hVP = this.getHeightVP();
@@ -109,7 +110,7 @@ export class Viewport
     /**
     
     */
-    setPixelVP(x:number, y:number, c:string) {
+    setPixelVP(x:number, y:number, c:Uint8ClampedArray) {
         this.parent.setPixelFB(this.vp_ul_x + x, this.vp_ul_y + y, c);
     }
 
@@ -120,7 +121,7 @@ export class Viewport
         const wVP = this.getWidthVP();
         const hVP = this.getHeightVP();
 
-        const vp_fb = new FrameBuffer(undefined, wVP, hVP, undefined);
+        const vp_fb = new FrameBuffer(undefined, wVP, hVP, this.getBackgroundColorVP());
         vp_fb.bgColorFB = this.bgColorVP;
 
         // Copy the current viewport into the new framebuffer's pixel buffer.

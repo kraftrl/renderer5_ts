@@ -8,7 +8,7 @@ export class Model {
 	name: string;
 	vertexList: Array<Vertex>;
 	lineSegmentList: Array<LineSegment>;
-	colorList: Array<Color>;
+	colorList: Array<Uint8ClampedArray>;
 	visible: boolean;
 	debug: boolean;
 	/**
@@ -17,7 +17,7 @@ export class Model {
 	constructor(name: string = "",
 				vertexList: Array<Vertex> = [],
 				lineSegmentList: Array<LineSegment> = [],
-				colorList: Array<Color> = [],
+				colorList: Array<Uint8ClampedArray> = [],
 				visible: boolean = true,
 				debug: boolean = false)
 	{

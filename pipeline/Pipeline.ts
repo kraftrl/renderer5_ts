@@ -1,17 +1,13 @@
-/*
+import { Viewport } from "../framebuffer/Viewport";
+import { Clip } from "./Clip-";
+import { Projection } from "./Projection";
+import { Rasterize } from "./Rasterize";
 
-*/
-
-/**
-
-*/
-class Pipeline {
+export class Pipeline {
 
 	static debug: boolean = false;
-	/**
-
-	*/
-	static render(scene:Scene, cn:HTMLCanvasElement) {
+	
+	static render(scene:Scene, cn:HTMLCanvasElement, vp: Viewport) {
 
 		// Render every Model in the Scene.
 		for(const position of scene.positionList) {
@@ -26,9 +22,11 @@ class Pipeline {
 				// 2. Apply the projection transformation.
 				const model4 = Projection.project(model3, scene.camera);
 
+				const model5 = Clip.clip(model4);
+
 				// 3. Rasterize each visible line segment into pixels.
-				for(const ls of model4.lineSegmentList) {
-					Rasterize.rasterize(model4, ls, cn);
+				for(const ls of model5.lineSegmentList) {
+					Rasterize.rasterize(model5, ls, cn, vp);
 				}
 			}
 		}

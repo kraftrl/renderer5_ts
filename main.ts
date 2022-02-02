@@ -1,9 +1,11 @@
 import { Color } from "./color/Color";
 import { FrameBuffer } from "./framebuffer/FrameBuffer";
+import { Axes2D } from "./models/Axes2D";
+import { Pipeline } from "./pipeline/Pipeline";
 import { ModelShading } from "./scene/ModelShading";
 
 const scene = new Scene();
-const framebuffer = new FrameBuffer(undefined,window.innerWidth,window.innerHeight,undefined);
+const framebuffer = new FrameBuffer(undefined,window.innerWidth,window.innerHeight,Color.Black);
 
 //scene.camera.projPerspective();
 scene.camera.projPerspectiveReset();
@@ -21,7 +23,7 @@ for (const p of scene.positionList) {
 	}
 }
 
-const axes = new Axes2D(-10,10,-10,10,-8,11,11);
+const axes = new Axes2D();
 ModelShading.setColor(axes, Color.Red);
 scene.addPosition( [new Position(axes)] );
 for(const vertex of axes.vertexList) {
@@ -38,18 +40,7 @@ print_help_message();
 
 const cn = <HTMLCanvasElement>document.getElementById("pixels");
 const ctx = cn.getContext("2d");
-if (ctx != null) {
-	ctx.canvas.width = window.innerWidth;
-	ctx.canvas.height = window.innerHeight;
-	//ctx.clearRect(0, 0, cn.width, cn.height);
-	//ctx.fillStyle = "black";
-	//ctx.fillRect(0, 0, cn.width, cn.height);
-	Pipeline.render(scene, cn);
-	display(ctx);
-}
-else {
-	console.log("cn.getContext(2d) is null");
-}
+display();
 
 document.addEventListener('keypress', keyPressed);
 
@@ -193,37 +184,26 @@ function keyPressed(event: { key: string }) {
 		scene.positionList[currentPosition].model.visible = true;
 	}
 
-	const cn = <HTMLCanvasElement>document.getElementById("pixels");
-	const ctx = cn.getContext("2d");
-	if (ctx != null) {
-		ctx.canvas.width = window.innerWidth;
-		ctx.canvas.height = window.innerHeight;
-		//ctx.clearRect(0, 0, cn.width, cn.height);
-		//ctx.fillStyle = "black";
-		//ctx.fillRect(0, 0, cn.width, cn.height);
-		Pipeline.render(scene, cn);
-	}
-	else {
-		console.log("cn.getContext(2d) is null");
-	}
+	display();
 }
 
-function display(ctx:CanvasRenderingContext2D){
-	var vpWidth = framebuffer.vp.getWidthVP();
-	var vpHeight = framebuffer.vp.getHeightVP();
-	var imgData = ctx.createImageData(vpWidth,vpHeight);
-	var k = 0;
-	for (var i = vpHeight - 1; i > 0; --i) {
-	   for (var j = 0; j < vpWidth; ++j) {
-		  const c = framebuffer.pixel_buffer[(i*vpWidth) + j];
-		  imgData.data[k+0] = c.r;
-		  imgData.data[k+1] = c.g;
-		  imgData.data[k+2] = c.b;
-		  imgData.data[k+3] = 255;
-		  k += 4;
-	   }
+function display(){
+	const cn = <HTMLCanvasElement>document.getElementById("pixels");
+	const ctx = cn.getContext("2d");
+	if (ctx == null) {
+		console.log("cn.getContext(2d) is null");
+		return;
 	}
-	ctx.putImageData(imgData, framebuffer.vp.vp_ul_x, framebuffer.vp.vp_ul_y);
+	const fb = new FrameBuffer(undefined,window.innerWidth,window.innerHeight,Color.Black);
+	ctx.canvas.width = window.innerWidth;
+	ctx.canvas.height = window.innerHeight;
+	Pipeline.render(scene, cn, fb.vp);
+
+	// probably should just store this imageData in Framebuffer
+	const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+	console.log(fb);
+	imageData.data.set(fb.pixel_buffer);
+	ctx.putImageData(imageData, fb.vp.vp_ul_x, fb.vp.vp_ul_y);
 }
 
 

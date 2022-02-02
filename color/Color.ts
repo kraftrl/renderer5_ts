@@ -3,72 +3,62 @@
  */
 export class Color{
 
-    static Black = new Color('#000000');
-    static White = new Color('#FFFFFF');
-    static Red = new Color('#FF0000');
-    static Green = new Color('#00FF00');
-    static Blue = new Color('#0000FF');
+    static Black = new Uint8ClampedArray([0,0,0,255]);
+    static White = new Uint8ClampedArray([255,255,255,255]);
+    static Red = new Uint8ClampedArray([255,0,0,255]);
+    static Green = new Uint8ClampedArray([0,255,0,255]);
+    static Blue = new Uint8ClampedArray([0,0,255,255]);
     static GAMMA = 1/2.2;
-
-    r: number;
-    g: number;
-    b: number;
-    // c: string;
-
-    constructor(color:string|[number,number,number]) {
-        var rgb: number[];
-        if (color instanceof Array) {
-            rgb = color;
-            // color = Color.RgbToHex(rgb);
-        } else {
-            rgb = Color.hexToRgb(color);
-        }
-        this.r = rgb[0];
-        this.g = rgb[1];
-        this.b = rgb[2];
-        // this.c = color; // Hold hex value as well.
-    }
 
     // Apply gamma-encoding (gamma-compression) to the colors.
     // https://www.scratchapixel.com/lessons/digital-imaging/digital-images
     // http://blog.johnnovak.net/2016/09/21/what-every-coder-should-know-about-gamma/
-    applyGamma() {
-        this.r = Math.round(Math.pow(this.r,  Color.GAMMA));
-        this.g = Math.round(Math.pow(this.g,  Color.GAMMA));
-        this.b = Math.round(Math.pow(this.b,  Color.GAMMA));
-        // this.c = Color.RgbToHex([this.r, this.g, this.b]); Hex value
+    static applyGamma(color: Uint8ClampedArray) {
+        return new Uint8ClampedArray([
+            color[0] = Math.round(Math.pow(color[0],  Color.GAMMA)),
+            color[1] = Math.round(Math.pow(color[1],  Color.GAMMA)),
+            color[2] = Math.round(Math.pow(color[2],  Color.GAMMA)),
+            255
+        ]);
+        // this.c = Color.RgbToHex([this[0], this[1], this[2]]); Hex value
     }
 
-    static interpolate(c:Color, slope:Color, dx:number){
-        const rgb: [number,number,number] =
-            [Math.abs(c.r + slope.r*dx),
-             Math.abs(c.g + slope.g*dx),
-             Math.abs(c.b + slope.b*dx)];
+    static interpolate(c:Uint8ClampedArray, slope:Uint8ClampedArray, dx:number){
+        return new Uint8ClampedArray([
+            Math.abs(c[0] + slope[0]*dx),
+            Math.abs(c[1] + slope[1]*dx),
+            Math.abs(c[2] + slope[2]*dx),
+            255
+        ]);
         // We need the Math.abs() because otherwise, we sometimes get -0.0.
-        return new Color(rgb);
     }
 
     // The smaller the weight is, the closer y is to the lower
     // pixel, so we give the lower pixel more emphasis when
     // weight is small.
-    static interpolateAA(c1:Color, c2:Color, weight:number){
-        const rgbLow: [number,number,number] =
-            [(1 - weight) * c1.r + weight * (c2.r / 255.0),
-             (1 - weight) * c1.g + weight * (c2.g / 255.0),
-             (1 - weight) * c1.b + weight * (c2.b / 255.0)];
-        const rgbHigh: [number,number,number] = 
-            [weight * c1.r + (1 - weight) * (c2.r/255.0),
-             weight * c1.g + (1 - weight) * (c2.g/255.0),
-             weight * c1.b + (1 - weight) * (c2.b/255.0)];
-        return [new Color(rgbLow), new Color(rgbHigh)];
+    static interpolateAA(c1:Uint8ClampedArray, c2:Uint8ClampedArray, weight:number){
+        const rgbLow = new Uint8ClampedArray([
+            (1 - weight) * c1[0] + weight * (c2[0] / 255.0),
+            (1 - weight) * c1[1] + weight * (c2[1] / 255.0),
+            (1 - weight) * c1[2] + weight * (c2[2] / 255.0),
+            255
+        ]);
+        const rgbHigh = new Uint8ClampedArray([
+            weight * c1[0] + (1 - weight) * (c2[0]/255.0),
+            weight * c1[1] + (1 - weight) * (c2[1]/255.0),
+            weight * c1[2] + (1 - weight) * (c2[2]/255.0),
+            255
+        ]);
+        return [rgbLow, rgbHigh];
     }
 
-    static slope(c1:Color, c0:Color, dx:number){
-        const rgb: [number,number,number] = 
-            [(c1.r - c0.r) / dx,
-             (c1.g - c0.g) / dx,
-             (c1.b - c0.b) / dx];
-        return new Color(rgb);
+    static slope(c1:Uint8ClampedArray, c0:Uint8ClampedArray, dx:number){
+        return new Uint8ClampedArray([
+            (c1[0] - c0[0]) / dx,
+            (c1[1] - c0[1]) / dx,
+            (c1[2] - c0[2]) / dx,
+            255
+        ]);
     }
 
     static hexToRgb(hex:string){
@@ -78,8 +68,8 @@ export class Color{
         return [0,0,0];
     }
 
-    static RgbToHex([r, g, b]: [number,number,number]) {
-        return "#" + Color.intToHex(r) + Color.intToHex(g) + Color.intToHex(b);
+    static RgbToHex(color: Uint8ClampedArray) {
+        return "#" + Color.intToHex(color[0]) + Color.intToHex(color[1]) + Color.intToHex(color[2]);
     }
 
     static intToHex(x:number) {
