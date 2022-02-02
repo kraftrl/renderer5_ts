@@ -1,15 +1,7 @@
-/*
+import { Model } from "../scene/Model";
 
-*/
+export class Projection {
 
-/**
-
-*/
-class Projection {
-
-	/**
-
-	*/
 	static project(model:Model, camera:Camera) {
 
 		// A new vertex list to hold the transformed vertices.

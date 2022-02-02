@@ -1,16 +1,9 @@
-/*
+import { Color } from "../color/Color";
+import { Model } from "./Model";
 
-*/
+export class ModelShading {
 
-/**
-
-*/
-class ModelShading {
-
-	/**
-
-	*/
-	static setColor(model:Model, c:string) {
+	static setColor(model:Model, c:Uint8ClampedArray) {
 		if(model.colorList.length == 0) {
 			for(const v of model.vertexList) {
 				model.colorList.push(c);
@@ -23,10 +16,6 @@ class ModelShading {
 		}
 	}
 
-
-	/**
-
-	*/
 	static setRandomColor(model:Model) {
 		ModelShading.setColor( model, ModelShading.randomColor() );
 	}
@@ -45,10 +34,6 @@ class ModelShading {
 		}
 	}
 
-
-	/**
-
-	*/
 	static setRandomColors(model:Model) {
 		if(model.colorList.length == 0) {
 			ModelShading.setRandomVertexColors(model);
@@ -60,9 +45,6 @@ class ModelShading {
 		}
 	}
 
-	/**
-
-	*/
 	static setRandomLineSegmentColors(model:Model) {
 		model.colorList = [];
 		let index = 0;
@@ -74,10 +56,6 @@ class ModelShading {
 		}
 	}
 
-
-	/**
-
-	*/
 	static setRainbowLineSegmentColors(model:Model) {
 		model.colorList = [];
 		let index = 0;
@@ -90,16 +68,10 @@ class ModelShading {
 		}
 	}
 
-
-	/**
-
-	*/
 	static randomColor() {
-		let color = '#';
-		const letters = '0123456789ABCDEF';
-		for (let h = 0; h < 6; ++h) {
-			color += letters[Math.floor(Math.random() * 16)];
-		}
-		return color;
+		let r = Math.floor(Math.random() * 255);
+		let g = Math.floor(Math.random() * 255);
+		let b = Math.floor(Math.random() * 255);
+		return new Uint8ClampedArray([r, g, b, 255]);
 	}
 }

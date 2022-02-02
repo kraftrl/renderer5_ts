@@ -20,6 +20,7 @@ import { GRSModel } from './../models/GRSModel.js';
 import { Axes2D } from './../models/Axes2D.js';
 
 import { InteractiveAbstractClient } from './InteractiveAbstractClient.js';
+import { Color } from '../color/Color.js';
 
 export class InteractiveGRSModels extends InteractiveAbstractClient {
     constructor() {
@@ -68,7 +69,7 @@ export class InteractiveGRSModels extends InteractiveAbstractClient {
         for (var m of this.modelArray) {
             ModelShading.setRandomColor(m);
         }
-        ModelShading.setColor(axes, "#FF0000");
+        ModelShading.setColor(axes, Color.Red);
 
         this.currentModel = 0;
 

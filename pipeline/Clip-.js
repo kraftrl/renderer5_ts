@@ -1,3 +1,4 @@
+import { Color } from '../color/Color.js';
 import { Vertex } from './../scene/Vertex.js';
 
 export class Clip {
@@ -81,12 +82,12 @@ export class Clip {
         // "i" for inside
         var vix = model.vertexList[ls.vIndex[inside]].x;
         var viy = model.vertexList[ls.vIndex[inside]].y;
-        var ci = hexToRgb(model.colorList[ls.cIndex[inside]]);
+        var ci = model.colorList[ls.cIndex[inside]];
         console.log(ci);
         // and "o" for outside
         var vox = model.vertexList[ls.vIndex[outside]].x;
         var voy = model.vertexList[ls.vIndex[outside]].y;
-        var co = hexToRgb(model.colorList[ls.cIndex[outside]]);
+        var co = model.colorList[ls.cIndex[outside]];
 
         // Interpolate between v_outside and v_inside.
         
@@ -116,11 +117,11 @@ export class Clip {
 
         var t_ = t;
         console.log(ci);
-        var r = (1-t_) * co[0] + t_ * ci[0];
-        var g = (1-t_) * co[1] + t_ * ci[1];
-        var b = (1-t_) * co[2] + t_ * ci[2];
+        var r = (1-t_) * co.r + t_ * ci.r;
+        var g = (1-t_) * co.g + t_ * ci.g;
+        var b = (1-t_) * co.b + t_ * ci.b;
 
-        var c_new = RgbToHex(r, g, b);
+        var c_new = new Uint8ClampedArray([r, g, b, 255]);
 
         // Modify the Model and LineSegment to contain the new Vertex and Color
         var vIndex = model.vertexList.length;
@@ -131,23 +132,4 @@ export class Clip {
         ls.vIndex[outside] = vIndex;
         ls.cIndex[outside] = cIndex;
     }
-}
-
-function hexToRgb(hex){
-    //hex = hex.split('#');
-    if(hex.match(/^#[A-Fa-f0-9]{6}/)){
-        return [parseInt(hex.substr(1, 2), 16), parseInt(hex.substr(3,4), 16), parseInt(hex.substr(5,6), 16)];
-    }
-}
-
-function RgbToHex(r, g, b) {
-    console.log("#" + intToHex(r) + intToHex(g) + intToHex(b));
-    return "#" + intToHex(r) + intToHex(g) + intToHex(b);
-}
-
-function intToHex(x) {
-    if (x < 10) {
-        return "0" + x.toString(16);
-    }
-    return x.toString(16);
 }

@@ -1,4 +1,5 @@
-import { Matrix } from './Matrix.js'
+import { Matrix } from './Matrix.js';
+import { Color } from '../color/Color.js';
 
 export class ModelShading {
 
@@ -20,7 +21,7 @@ export class ModelShading {
         ModelShading.setColor(model, ModelShading.randomColor());
     }
 
-    static setRandomVertexColor(model) {
+    static setRandomVertexColors(model) {
         model.colorList = [];
         
         for (var v of model.vertexList) {
@@ -68,12 +69,10 @@ export class ModelShading {
 	}
 
 	static randomColor() {
-		var color = '#';
-		var letters = '0123456789ABCDEF';
-		for (var h = 0; h < 6; ++h) {
-			color += letters[Math.floor(Math.random() * 16)];
-		}
-		return color;
+		let r = Math.floor(Math.random() * 255);
+		let g = Math.floor(Math.random() * 255);
+		let b = Math.floor(Math.random() * 255);
+		return new Uint8ClampedArray([r, g, b, 255]);
 	}
 
 }

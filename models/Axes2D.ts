@@ -1,11 +1,6 @@
-/*
+import { Model } from "../scene/Model";
 
-*/
-
-/**
-
-*/
-class Axes2D extends Model{
+export class Axes2D extends Model{
 
 	constructor(xMin = -1, xMax = 1, yMin = -1, yMax = 1, z = 0.0, xMarks = 5, yMarks = 5) {
 

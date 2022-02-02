@@ -1,6 +1,7 @@
 import { Model } from './../scene/Model.js';
 import { LineSegment } from './../scene/LineSegment.js';
 import { Vertex } from './../scene/Vertex.js';
+import { Color } from '../color/Color.js';
 
 export class Axes3D extends Model {
     /**
@@ -18,7 +19,7 @@ export class Axes3D extends Model {
       @param cY    color for the y-axis
       @param cZ    color for the z-axis
     */
-    constructor(xMin = -1.0, xMax = 1.0, yMin = -1.0, yMax = 1.0, zMin = -1.0, zMax = 1.0, cX = "#000000", cY = "#000000", cZ = "#000000") {
+    constructor(xMin = -1.0, xMax = 1.0, yMin = -1.0, yMax = 1.0, zMin = -1.0, zMax = 1.0, cX = Color.Black, cY = Color.Black, cZ = Color.Black) {
         super("Axes 3D");
         this.addVertex([new Vertex (xMin, 0, 0),
                         new Vertex (xMax, 0, 0),
